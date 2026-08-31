@@ -43,3 +43,12 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Android signing — NUNCA versionar la firma de la app
+/android/key.properties
+**/*.keystore
+**/*.jks
+
+# Artefactos sueltos de desarrollo (no son fuente del proyecto)
+custom_lint.log
+/logo-v1.jpeg
