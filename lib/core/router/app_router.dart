@@ -91,8 +91,15 @@ GoRouter goRouter(Ref ref) {
       // /onboarding, so a single prefix check covers it.
       final inOnboarding = path.startsWith('/onboarding');
 
+      // Only one rule: an unpaired device cannot leave the onboarding flow.
+      //
+      // There is deliberately NO "paired && at /onboarding -> go home" rule.
+      // `context.push` does not change `state.uri` in go_router, so every
+      // pushed pairing screen still reports path == '/onboarding'. That rule
+      // would fire the instant `createChallenge`/`joinChallenge` flips the
+      // pairing stream to Paired and eject the user from their own QR screen.
+      // Screens navigate home themselves when the ceremony is done.
       if (!paired && !inOnboarding) return '/onboarding';
-      if (paired && path == '/onboarding') return '/';
       return null;
     },
     routes: [

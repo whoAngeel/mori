@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import '../../../../core/theme/ink_colors.dart';
-
-/// A QR drawn in black on `plate` with a 16 dp quiet zone and error correction
-/// M (`docs/design-system.md` §6). The QR never carries ink: cheap cameras read
-/// black on white.
+/// A QR drawn in pure black on pure white with a 16 dp quiet zone and error
+/// correction M (`docs/design-system.md` §6). The QR never carries ink: cheap
+/// cameras — and phone-to-screen scans — need the maximum possible contrast,
+/// not the near-black/near-white ink tokens.
 class QrPlate extends StatelessWidget {
   /// Creates a QR plate for [data].
   const QrPlate({super.key, required this.data, this.size = 240});
@@ -16,12 +15,14 @@ class QrPlate extends StatelessWidget {
   /// Edge length of the QR itself, in dp.
   final double size;
 
+  static const _white = Color(0xFFFFFFFF);
+  static const _black = Color(0xFF000000);
+
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<InkColors>()!;
     return Center(
       child: Container(
-        color: colors.plate,
+        color: _white,
         padding: const EdgeInsets.all(16),
         // The plate keeps its final size before the payload arrives, so the QR
         // fills in without the layout jumping.
@@ -39,9 +40,9 @@ class QrPlate extends StatelessWidget {
                   // keep exactly 16.
                   padding: EdgeInsets.zero,
                   errorCorrectionLevel: QrErrorCorrectLevel.M,
-                  backgroundColor: colors.plate,
+                  backgroundColor: _white,
                   // ignore: deprecated_member_use
-                  foregroundColor: colors.inkBlack,
+                  foregroundColor: _black,
                 ),
         ),
       ),

@@ -18,8 +18,9 @@
   _Req: 10.8_
 
 - [x] **0.2** Añadir `mobile_scanner: ^7.4.0` y `qr_flutter: ^4.1.0` a
-  `pubspec.yaml`. Verificar que no entra ninguna dependencia de red.
-  `flutter pub get`.
+  `pubspec.yaml`. Ninguna dependencia mueve **datos del reto** por la red.
+  Única excepción posterior: `sentry_flutter` para crash reporting opt-in
+  (PRD D21, tarea 8.7). `flutter pub get`.
   _Req: 10.1_
 
 - [x] **0.3** Descargar las fuentes OFL a `assets/fonts/`
@@ -297,8 +298,9 @@
 
 - [ ] **8.1** `SettingsScreen`: editar nombres, ver `pairingId` / fecha de inicio
   / slot / día del reto, la explicación de que **el respaldo es el teléfono de la
-  pareja**, y la entrada **Ayudar a [Nombre] a recuperar su reto** (inactiva si
-  no hay `PartnerSnapshots`).
+  pareja**, la entrada **Ayudar a [Nombre] a recuperar su reto** (inactiva si
+  no hay `PartnerSnapshots`), y el interruptor de **reporte de crash** (D21),
+  que lee y escribe `TelemetryConsent`.
   _Req: 9.1, 9.2, 9.3, 11.1, 11.2_
 
 - [ ] **8.2** Restablecer el reto con doble confirmación, borrado de las cuatro
@@ -309,8 +311,12 @@
   - `flutter analyze` sin advertencias;
   - `grep` sin resultados para `Colors.`, `fromSeed`, `BoxShadow`,
     `BackdropFilter`, `print(`;
-  - `pubspec.yaml` sin dependencias de red;
-  - `AndroidManifest.xml` con `CAMERA` como único permiso.
+  - `pubspec.yaml` sin dependencias de red **salvo `sentry_flutter`** (D21);
+    ninguna dependencia que mueva datos del reto;
+  - Sentry no envía nada con `TelemetryConsent.enabled == false` (probar el
+    `beforeSend`);
+  - `AndroidManifest.xml` con `CAMERA` como único permiso (Sentry no añade
+    permisos; `INTERNET` ya es implícito en Android).
   _Req: 10.1, 10.2, 10.5, 10.6, 10.7_
 
 - [ ] **8.4** Prueba completa en dispositivo con dos instalaciones: emparejar,
@@ -326,6 +332,15 @@
 
 - [ ] **8.6** Actualizar el `README.md`: sustituir la documentación de la
   plantilla por la del producto, con enlaces a `PRD.md` y a `docs/`.
+
+- [x] **8.7** Crash reporting opt-in (PRD D21). `sentry_flutter` en
+  `pubspec.yaml`. `core/telemetry/`: `TelemetryConsent` (elección en un JSON
+  del directorio de soporte, sin migración) y `TelemetryConsentScreen` (opt-in
+  una sola vez, antes de `/onboarding`, apagado por defecto). `main.dart`:
+  `SentryFlutter.init` con `tracesSampleRate = 0`, `enableAutoSessionTracking
+  = false`, `sendDefaultPii = false`, y `beforeSend` que devuelve `null`
+  mientras no haya consentimiento. El interruptor para revocar vive en 8.1.
+  _Req: 10.1_
 
 ---
 

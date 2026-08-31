@@ -10,9 +10,13 @@ import '../../../../core/widgets/ink_button.dart';
 
 /// The first screen for an unpaired device: three ways in.
 ///
-/// Copy is exact from `docs/design-system.md` §8. The third option (restore)
-/// routes to the restore scanner (task 6.12); until then it is wired to a
-/// placeholder route.
+/// Copy is exact from `docs/design-system.md` §8.
+///
+/// The three buttons use `goNamed`, not `pushNamed`: `push` does not change the
+/// URL and stacks a new page every tap, so a slow first frame on a real device
+/// lets someone pile up a dozen `pair/show` screens they then have to pop one
+/// by one. `go` to these nested routes is idempotent (same location = no-op)
+/// and still leaves onboarding underneath for the back gesture.
 class OnboardingScreen extends ConsumerWidget {
   /// Creates the onboarding screen.
   const OnboardingScreen({super.key});
@@ -45,18 +49,18 @@ class OnboardingScreen extends ConsumerWidget {
                   InkButton(
                     label: 'Yo empiezo',
                     primary: true,
-                    onPressed: () => context.pushNamed(AppRoute.pairShow.name),
+                    onPressed: () => context.goNamed(AppRoute.pairShow.name),
                   ),
                   const SizedBox(height: 12),
                   GhostButton(
                     label: 'Me uno al de mi pareja',
-                    onPressed: () => context.pushNamed(AppRoute.pairScan.name),
+                    onPressed: () => context.goNamed(AppRoute.pairScan.name),
                   ),
                   const SizedBox(height: 12),
                   GhostButton(
                     label: 'Recuperar mi reto',
                     onPressed: () =>
-                        context.pushNamed(AppRoute.restoreScan.name),
+                        context.goNamed(AppRoute.restoreScan.name),
                   ),
                 ],
               ),

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/ink_colors.dart';
 import '../../../../core/utils/result.dart';
 import '../../../../core/widgets/eyebrow.dart';
 import '../../../../core/widgets/ghost_button.dart';
+import '../../../sync/presentation/widgets/qr_plate.dart';
 import '../providers/pair_qr_codec.dart';
 import '../providers/pairing_notifier.dart';
 
@@ -27,15 +27,20 @@ class PairRespondScreen extends ConsumerStatefulWidget {
 class _PairRespondScreenState extends ConsumerState<PairRespondScreen> {
   String? _qrData;
   String? _error;
+  bool _armed = false;
 
   @override
   void initState() {
     super.initState();
     _build();
+    Future.delayed(const Duration(milliseconds: 700), () {
+      if (mounted) setState(() => _armed = true);
+    });
   }
 
   Future<void> _build() async {
-    final result = await ref.read(pairingControllerProvider.notifier).buildInvite();
+    final result =
+        await ref.read(pairingControllerProvider.notifier).buildInvite();
     if (!mounted) return;
     setState(() {
       switch (result) {
@@ -53,6 +58,7 @@ class _PairRespondScreenState extends ConsumerState<PairRespondScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(title: const Text('Me uno')),
       body: SafeArea(
         child: Center(
@@ -61,52 +67,27 @@ class _PairRespondScreenState extends ConsumerState<PairRespondScreen> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  const SizedBox(height: 8),
                   const Eyebrow('Ya casi'),
                   const SizedBox(height: 8),
                   Text(
-                    'Ahora muéstrale este código para que te vea a ti.',
-                    style: theme.textTheme.bodyMedium!
-                        .copyWith(color: colors.inkMuted),
-                  ),
-                  const SizedBox(height: 24),
-                  if (_error != null)
-                    Text(
-                      _error!,
-                      style: theme.textTheme.bodyMedium!
-                          .copyWith(color: colors.inkBlack),
-                    )
-                  else
-                    // The plate is drawn immediately at its final size; the QR
-                    // fills in once built, so nothing jumps or flashes.
-                    Center(
-                      child: Container(
-                        color: colors.plate,
-                        padding: const EdgeInsets.all(16),
-                        child: SizedBox(
-                          width: 240,
-                          height: 240,
-                          child: _qrData == null
-                              ? null
-                              : QrImageView(
-                                  data: _qrData!,
-                                  version: QrVersions.auto,
-                                  size: 240,
-                                  padding: EdgeInsets.zero,
-                                  backgroundColor: colors.plate,
-                                  // ignore: deprecated_member_use
-                                  foregroundColor: colors.inkBlack,
-                                ),
-                        ),
-                      ),
+                    _error ??
+                        'Ahora muéstrale este código para que te vea a ti.',
+                    style: theme.textTheme.bodyMedium!.copyWith(
+                      color: _error != null ? colors.inkBlack : colors.inkMuted,
                     ),
-                  const SizedBox(height: 24),
+                  ),
+                  const SizedBox(height: 20),
+                  if (_error == null) QrPlate(data: _qrData ?? ''),
+                  const Spacer(),
                   GhostButton(
                     label: 'Listo',
-                    onPressed: () => context.goNamed(AppRoute.home.name),
+                    onPressed: _armed
+                        ? () => context.goNamed(AppRoute.home.name)
+                        : null,
                   ),
+                  const SizedBox(height: 8),
                 ],
               ),
             ),

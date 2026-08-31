@@ -221,7 +221,7 @@ un reto en curso; comunicar con precisión qué se recuperó y qué no.
 |---|---|
 | **Offline** | Los **datos del reto** nunca cruzan la red: no hay backend, no hay sincronización por servidor, las tipografías van empaquetadas en `assets/`. La única salida de red posible es un reporte de crash (ver **Telemetría**). |
 | **Privacidad** | Del dispositivo solo sale: (1) lo que aparece en un QR mostrado voluntariamente, y (2) —si el usuario lo acepta— reportes de crash. Sin analítica de uso, sin identificadores de publicidad. |
-| **Telemetría** | Reporte de crash vía Sentry, **opt-in** en el primer arranque y apagado por defecto. Sin *performance monitoring*, sin sesiones de release-health, sin PII: el evento lleva el stack trace y el modelo del teléfono, no nombres, montos ni el tablero. Revocable en Ajustes. La decisión D18 lo justifica. |
+| **Telemetría** | Reporte de crash vía Sentry, **opt-in** en el primer arranque y apagado por defecto (decisión **D21**). Sin *performance monitoring*, sin sesiones de release-health, sin PII: el evento lleva el stack trace y el modelo del teléfono, no nombres, montos ni el tablero. Revocable en Ajustes. |
 | **Permisos** | Solo `CAMERA`, y solo se pide al entrar a escanear. La primera vez se explica antes de pedirlo. |
 | **Rendimiento** | La cuadrícula de 365 casillas usa `SliverGrid` con `itemBuilder` perezoso. Codificar o decodificar el payload debe tardar < 5 ms. El QR se genera una sola vez por estado, no en cada frame. |
 | **Gama baja** | Sin blur, sin sombras costosas, sin `BackdropFilter`. Objetivo: 60 fps en un dispositivo de 2 GB de RAM. |
@@ -286,7 +286,7 @@ Ambas OFL, empaquetadas localmente.
 - Exportar a CSV o compartir imágenes.
 - iOS, web, escritorio.
 - i18n.
-- Cualquier cosa que toque la red.
+- Cualquier tráfico de red **de datos del reto** (backend, sync por servidor, analítica de uso). La única excepción es el reporte de crash opt-in de D21.
 
 ---
 

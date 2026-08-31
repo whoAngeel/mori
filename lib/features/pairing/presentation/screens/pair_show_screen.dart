@@ -16,7 +16,8 @@ import '../providers/pairing_notifier.dart';
 /// Slot A shows their invite QR here for the partner to scan.
 ///
 /// The name is entered first (validated 1..24 UTF-8 bytes, task 4.7); once the
-/// challenge is created the QR is drawn in black on `plate` with a quiet zone.
+/// challenge is created the QR is drawn in pure black on white — cheap cameras,
+/// and phone-to-screen scans, need maximum contrast.
 class PairShowScreen extends ConsumerStatefulWidget {
   /// Creates the pair-show screen.
   const PairShowScreen({super.key});
@@ -31,6 +32,10 @@ class _PairShowScreenState extends ConsumerState<PairShowScreen> {
   String? _error;
   bool _busy = false;
 
+  /// The actions under the QR stay inert for a moment after they appear, so a
+  /// stray tap right after "Mostrar mi código" cannot dismiss the QR.
+  bool _actionsArmed = false;
+
   @override
   void dispose() {
     _controller.dispose();
@@ -44,8 +49,6 @@ class _PairShowScreenState extends ConsumerState<PairShowScreen> {
       setState(() => _error = validationError);
       return;
     }
-    // Drop the keyboard now so the QR view is not laid out while the inset is
-    // still collapsing (the QR appears to flash otherwise).
     FocusScope.of(context).unfocus();
     setState(() {
       _error = null;
@@ -60,6 +63,9 @@ class _PairShowScreenState extends ConsumerState<PairShowScreen> {
         setState(() {
           _qrData = PairQrCodec.encode(value);
           _busy = false;
+        });
+        Future.delayed(const Duration(milliseconds: 700), () {
+          if (mounted) setState(() => _actionsArmed = true);
         });
       case Err(:final failure):
         setState(() {
@@ -120,45 +126,54 @@ class _PairShowScreenState extends ConsumerState<PairShowScreen> {
 
   Widget _qrView(ThemeData theme, InkColors colors) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        const SizedBox(height: 8),
         const Eyebrow('Muestra este código'),
         const SizedBox(height: 8),
         Text(
-          'Para que tu pareja te escanee. Cuando lo haga, escanea su respuesta '
-          'para terminar.',
+          'Que tu pareja lo escanee desde "Me uno al de mi pareja".',
           style: theme.textTheme.bodyMedium!.copyWith(color: colors.inkMuted),
         ),
-        const SizedBox(height: 24),
-        // Black on plate with a 16 dp quiet zone: cheap cameras read black on
-        // white, so the QR never carries ink.
-        Center(
+        const SizedBox(height: 20),
+        _qrBlock(),
+        // Push the actions to the bottom, well away from the QR and from where
+        // "Mostrar mi código" was tapped.
+        const Spacer(),
+        InkButton(
+          label: 'Ya me escaneó',
+          primary: true,
+          onPressed: _actionsArmed
+              ? () => context.goNamed(AppRoute.pairConfirm.name)
+              : null,
+        ),
+        const SizedBox(height: 12),
+        GhostButton(
+          label: 'Terminar sin confirmar',
+          onPressed: _actionsArmed
+              ? () => context.goNamed(AppRoute.home.name)
+              : null,
+        ),
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  Widget _qrBlock() => _qrData == null
+      ? const SizedBox.shrink()
+      : Center(
           child: Container(
-            color: colors.plate,
+            color: const Color(0xFFFFFFFF),
             padding: const EdgeInsets.all(16),
             child: QrImageView(
               data: _qrData!,
               version: QrVersions.auto,
-              size: 240,
-              backgroundColor: colors.plate,
+              size: 260,
+              padding: EdgeInsets.zero,
+              errorCorrectionLevel: QrErrorCorrectLevel.M,
+              backgroundColor: const Color(0xFFFFFFFF),
               // ignore: deprecated_member_use
-              foregroundColor: colors.inkBlack,
+              foregroundColor: const Color(0xFF000000),
             ),
           ),
-        ),
-        const SizedBox(height: 24),
-        InkButton(
-          label: 'Ya me escaneó',
-          primary: true,
-          onPressed: () => context.pushNamed(AppRoute.pairConfirm.name),
-        ),
-        const SizedBox(height: 12),
-        GhostButton(
-          label: 'Ahora no',
-          onPressed: () => context.goNamed(AppRoute.home.name),
-        ),
-      ],
-    );
-  }
+        );
 }
