@@ -72,7 +72,7 @@ valores no se cambian "a ojo": si se tocan, se recalculan.
 | `inkMuted` | `#9A9A93` | 6.44 : 1 |
 | `inkSelf` | `#FF6B78` | 6.62 : 1 |
 | `inkPartner` | `#3FA3E0` | 6.53 : 1 |
-| `overprint` | `#B79BD6` | 8.1 : 1 |
+| `overprint` | `#B79BD6` | 7.53 : 1 |
 | `rule` | `#33333A` | — |
 
 > **El `overprint` no es el multiply literal.** `#B3243F × #005E96` da casi negro

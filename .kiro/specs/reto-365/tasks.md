@@ -36,26 +36,26 @@
 
 ## Fase 1 — Núcleo transversal
 
-- [ ] **1.1** `core/time/clock.dart`: interfaz `Clock`, `SystemClock`,
+- [x] **1.1** `core/time/clock.dart`: interfaz `Clock`, `SystemClock`,
   `toEpochDay` y su provider. Pruebas de la conversión de fecha civil a
   `epochDay`, incluidos cambios de mes y de año.
   _Req: 3.1_
 
-- [ ] **1.2** Ampliar `core/error/failures.dart` con las jerarquías selladas
+- [x] **1.2** Ampliar `core/error/failures.dart` con las jerarquías selladas
   `SyncFailure` y `ChallengeFailure` del diseño §3.
   _Req: 7.3_
 
-- [ ] **1.3** `core/theme/ink_colors.dart`: `ThemeExtension` con los ocho tokens,
+- [x] **1.3** `core/theme/ink_colors.dart`: `ThemeExtension` con los ocho tokens,
   claro y oscuro, con los hex exactos de `docs/design-system.md` §2.
   Reescribir `app_theme.dart` sin `ColorScheme.fromSeed`.
   _Req: 10.4, 10.6_
 
-- [ ] **1.4** `core/theme/app_typography.dart`: la escala de
+- [x] **1.4** `core/theme/app_typography.dart`: la escala de
   `docs/design-system.md` §3, con `FontFeature.tabularFigures()` en los estilos
   de PlexMono.
   _Req: 5.2_
 
-- [ ] **1.5** Prueba: los seis pares de contraste de `docs/design-system.md` §2
+- [x] **1.5** Prueba: los seis pares de contraste de `docs/design-system.md` §2
   cumplen el mínimo anotado. Es una prueba aritmética, no visual — impide que
   alguien "ajuste un color" y rompa AA sin darse cuenta.
   _Req: 10.4_
