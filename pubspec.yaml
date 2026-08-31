@@ -50,6 +50,11 @@ dependencies:
   qr_flutter: ^4.1.0       # dibujar QR
   screen_brightness: ^2.1.11  # brillo al máximo al mostrar un QR (sin red)
 
+  # Crash reporting — la ÚNICA salida de red de la app, y solo con consentimiento
+  # explícito del usuario (opt-in en el primer arranque). Sin performance, sin
+  # sesiones, sin PII. Ver docs/PRD.md §"Fuera de alcance" nota de telemetría.
+  sentry_flutter: ^9.28.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

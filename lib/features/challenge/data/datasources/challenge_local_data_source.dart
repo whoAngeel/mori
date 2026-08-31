@@ -20,6 +20,10 @@ class ChallengeLocalDataSource {
   final Random _random;
   final int Function() _nowMillis;
 
+  /// A box at or above this amount (in MXN) counts as "expensive". Two of them
+  /// never come out back to back — see [drawBox].
+  static const highThreshold = 300;
+
   /// Streams the 365 boxes ordered by day.
   Stream<List<OwnBoxRow>> watchBoxes() {
     return (_db.select(
@@ -39,6 +43,13 @@ class ChallengeLocalDataSource {
   /// free. Selection and write happen in one transaction, so two fast taps can
   /// never assign the same box twice.
   ///
+  /// Anti-streak (design decision, cash-flow): two boxes `>= [highThreshold]`
+  /// never come out on consecutive draws. If the previous draw was expensive,
+  /// this one is restricted to the cheaper free boxes — unless every free box
+  /// left is expensive, in which case the rule relaxes so the pool still
+  /// drains completely. Reordering only: the full 365 and the total are
+  /// unchanged, and it never crosses the QR (still just box states).
+  ///
   /// Throws [CacheException] on a database error.
   Future<int?> drawBox() async {
     try {
@@ -48,7 +59,26 @@ class ChallengeLocalDataSource {
         )..where((t) => t.status.equals(0))).get();
         if (free.isEmpty) return null;
 
-        final chosen = free[_random.nextInt(free.length)];
+        // The most recently drawn box, by draw time.
+        final last =
+            await (_db.select(_db.ownBoxes)
+                  ..where((t) => t.drawnAtMillis.isNotNull())
+                  ..orderBy([
+                    (t) => OrderingTerm(
+                      expression: t.drawnAtMillis,
+                      mode: OrderingMode.desc,
+                    ),
+                  ])
+                  ..limit(1))
+                .getSingleOrNull();
+
+        var pool = free;
+        if (last != null && last.day >= highThreshold) {
+          final cheap = free.where((b) => b.day < highThreshold).toList();
+          if (cheap.isNotEmpty) pool = cheap;
+        }
+
+        final chosen = pool[_random.nextInt(pool.length)];
         await (_db.update(
           _db.ownBoxes,
         )..where((t) => t.day.equals(chosen.day))).write(

@@ -11,6 +11,7 @@ import '../../domain/entities/pair_invite.dart';
 import '../../domain/entities/pairing_state.dart';
 import '../../domain/repositories/pairing_repository.dart';
 import '../../domain/usecases/apply_pair_payload.dart';
+import '../../domain/usecases/build_pair_payload.dart';
 import '../../domain/usecases/create_challenge.dart';
 import '../../domain/usecases/join_challenge.dart';
 import '../../domain/usecases/reset_challenge.dart';
@@ -59,6 +60,11 @@ class PairingController extends _$PairingController {
   }) => JoinChallenge(_repo).call(
     JoinChallengeParams(inviterInvite: inviterInvite, localName: localName),
   );
+
+  /// Builds this device's PAIR payload to show back to the partner (slot B's
+  /// response, or slot A re-showing the invite).
+  Future<Result<PairInvite>> buildInvite() =>
+      BuildPairPayload(_repo).call(const NoParams());
 
   /// Applies a scanned partner PAIR payload.
   Future<Result<ApplyPairOutcome>> applyPartner(PairInvite invite) =>

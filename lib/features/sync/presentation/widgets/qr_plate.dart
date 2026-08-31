@@ -23,17 +23,26 @@ class QrPlate extends StatelessWidget {
       child: Container(
         color: colors.plate,
         padding: const EdgeInsets.all(16),
-        child: QrImageView(
-          data: data,
-          version: QrVersions.auto,
-          size: size,
-          // The 16 dp quiet zone is the Container's padding; QrImageView adds
-          // its own 10 dp by default, so it is zeroed here to keep exactly 16.
-          padding: EdgeInsets.zero,
-          errorCorrectionLevel: QrErrorCorrectLevel.M,
-          backgroundColor: colors.plate,
-          // ignore: deprecated_member_use
-          foregroundColor: colors.inkBlack,
+        // The plate keeps its final size before the payload arrives, so the QR
+        // fills in without the layout jumping.
+        child: SizedBox(
+          width: size,
+          height: size,
+          child: data.isEmpty
+              ? null
+              : QrImageView(
+                  data: data,
+                  version: QrVersions.auto,
+                  size: size,
+                  // The 16 dp quiet zone is the Container's padding;
+                  // QrImageView adds its own 10 dp by default, zeroed here to
+                  // keep exactly 16.
+                  padding: EdgeInsets.zero,
+                  errorCorrectionLevel: QrErrorCorrectLevel.M,
+                  backgroundColor: colors.plate,
+                  // ignore: deprecated_member_use
+                  foregroundColor: colors.inkBlack,
+                ),
         ),
       ),
     );

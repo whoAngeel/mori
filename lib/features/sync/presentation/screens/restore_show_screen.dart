@@ -23,7 +23,6 @@ class RestoreShowScreen extends ConsumerStatefulWidget {
 class _RestoreShowScreenState extends ConsumerState<RestoreShowScreen> {
   String? _payload;
   String? _error;
-  bool _loading = true;
 
   @override
   void initState() {
@@ -37,7 +36,6 @@ class _RestoreShowScreenState extends ConsumerState<RestoreShowScreen> {
         .buildRestore();
     if (!mounted) return;
     setState(() {
-      _loading = false;
       switch (result) {
         case Ok(:final value):
           _payload = value;
@@ -63,9 +61,7 @@ class _RestoreShowScreenState extends ConsumerState<RestoreShowScreen> {
               constraints: const BoxConstraints(maxWidth: 480),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: _loading
-                    ? const Center(child: CircularProgressIndicator())
-                    : _error != null
+                child: _error != null
                     ? Center(
                         child: Text(
                           _error!,
@@ -89,7 +85,8 @@ class _RestoreShowScreenState extends ConsumerState<RestoreShowScreen> {
                             ),
                           ),
                           const SizedBox(height: 24),
-                          QrPlate(data: _payload!),
+                          // Plate at final size immediately; QR fills in.
+                          QrPlate(data: _payload ?? ''),
                         ],
                       ),
               ),

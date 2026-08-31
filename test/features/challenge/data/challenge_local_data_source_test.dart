@@ -92,4 +92,49 @@ void main() {
       expect(await stateVersion(), 365); // no bump on the empty draw
     });
   });
+
+  group('anti-streak: no two expensive draws in a row', () {
+    const t = ChallengeLocalDataSource.highThreshold; // 300
+
+    /// Draws the whole pool, one draw per millisecond so "last drawn" is
+    /// unambiguous, and returns the days in draw order.
+    Future<List<int>> drawAllInOrder() async {
+      final order = <int>[];
+      for (var i = 0; i < 365; i++) {
+        fakeMillis += 1;
+        final day = await ds.drawBox();
+        expect(day, isNotNull);
+        order.add(day!);
+      }
+      return order;
+    }
+
+    test('never two boxes >= 300 back to back while cheap boxes remain',
+        () async {
+      final order = await drawAllInOrder();
+      expect(order.toSet().length, 365); // still every box, no repeat
+
+      var cheapDrawn = 0;
+      const cheapTotal = t - 1; // days 1..299
+      for (var i = 0; i < order.length; i++) {
+        if (i > 0 && order[i] >= t && order[i - 1] >= t) {
+          final cheapRemaining = cheapTotal - cheapDrawn;
+          expect(
+            cheapRemaining,
+            0,
+            reason: 'drew ${order[i - 1]} then ${order[i]} with '
+                '$cheapRemaining cheap boxes still free',
+          );
+        }
+        if (order[i] < t) cheapDrawn++;
+      }
+    });
+
+    test('relaxes at the end: the pool still drains to exactly 365', () async {
+      final order = await drawAllInOrder();
+      expect(order.length, 365);
+      expect(order.toSet().length, 365);
+      expect(await ds.drawBox(), isNull);
+    });
+  });
 }

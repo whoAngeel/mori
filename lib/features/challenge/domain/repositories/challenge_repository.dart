@@ -12,6 +12,10 @@ abstract interface class ChallengeRepository {
   /// Draws one random free box: marks it assigned, stamps the draw time and
   /// bumps `stateVersion`, all in one transaction.
   ///
+  /// The draw avoids two expensive boxes in a row (cash-flow rule; see the
+  /// data source). It relaxes when only expensive boxes are left, so the pool
+  /// still drains fully.
+  ///
   /// Fails with `NoBoxesLeft` when none are free, or `NoDrawsPending` when no
   /// draws are available today.
   Future<Result<Box>> drawNextBox();

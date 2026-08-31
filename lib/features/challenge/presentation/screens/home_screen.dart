@@ -9,6 +9,7 @@ import '../../../sync/presentation/widgets/discrepancy_notice.dart';
 import '../../../sync/presentation/widgets/partner_panel.dart';
 import '../providers/challenge_notifier.dart';
 import '../widgets/draw_button.dart';
+import '../widgets/draw_ceremony.dart';
 import '../widgets/pending_payments_list.dart';
 import '../widgets/progress_header.dart';
 
@@ -29,14 +30,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final result = await ref.read(challengeProvider.notifier).draw();
     if (!mounted) return;
     setState(() => _drawing = false);
-    final message = switch (result) {
-      Ok() => null,
-      Err(:final failure) => failure.message,
-    };
-    if (message != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(message)));
+    switch (result) {
+      case Ok(:final value):
+        final again = await Navigator.of(context).push<bool>(
+          PageRouteBuilder(
+            opaque: true,
+            transitionDuration: const Duration(milliseconds: 180),
+            pageBuilder: (_, _, _) => DrawCeremony(day: value.day),
+            transitionsBuilder: (_, anim, _, child) =>
+                FadeTransition(opacity: anim, child: child),
+          ),
+        );
+        if ((again ?? false) && mounted) await _draw();
+      case Err(:final failure):
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(failure.message)));
     }
   }
 

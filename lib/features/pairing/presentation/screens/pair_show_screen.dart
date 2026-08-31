@@ -8,6 +8,7 @@ import '../../../../core/theme/ink_colors.dart';
 import '../../../../core/utils/result.dart';
 import '../../../../core/widgets/eyebrow.dart';
 import '../../../../core/widgets/ghost_button.dart';
+import '../../../../core/widgets/ink_button.dart';
 import '../../domain/name_validation.dart';
 import '../providers/pair_qr_codec.dart';
 import '../providers/pairing_notifier.dart';
@@ -43,6 +44,9 @@ class _PairShowScreenState extends ConsumerState<PairShowScreen> {
       setState(() => _error = validationError);
       return;
     }
+    // Drop the keyboard now so the QR view is not laid out while the inset is
+    // still collapsing (the QR appears to flash otherwise).
+    FocusScope.of(context).unfocus();
     setState(() {
       _error = null;
       _busy = true;
@@ -71,6 +75,7 @@ class _PairShowScreenState extends ConsumerState<PairShowScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(title: const Text('Yo empiezo')),
       body: SafeArea(
         child: Center(
@@ -121,7 +126,8 @@ class _PairShowScreenState extends ConsumerState<PairShowScreen> {
         const Eyebrow('Muestra este código'),
         const SizedBox(height: 8),
         Text(
-          'Para que tu pareja te escanee.',
+          'Para que tu pareja te escanee. Cuando lo haga, escanea su respuesta '
+          'para terminar.',
           style: theme.textTheme.bodyMedium!.copyWith(color: colors.inkMuted),
         ),
         const SizedBox(height: 24),
@@ -142,8 +148,14 @@ class _PairShowScreenState extends ConsumerState<PairShowScreen> {
           ),
         ),
         const SizedBox(height: 24),
+        InkButton(
+          label: 'Ya me escaneó',
+          primary: true,
+          onPressed: () => context.pushNamed(AppRoute.pairConfirm.name),
+        ),
+        const SizedBox(height: 12),
         GhostButton(
-          label: 'Listo',
+          label: 'Ahora no',
           onPressed: () => context.goNamed(AppRoute.home.name),
         ),
       ],

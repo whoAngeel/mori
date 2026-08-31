@@ -46,6 +46,7 @@ class _PairScanScreenState extends ConsumerState<PairScanScreen> {
       setState(() => _error = validationError);
       return;
     }
+    FocusScope.of(context).unfocus();
     setState(() {
       _error = null;
       _handled = false;
@@ -79,7 +80,8 @@ class _PairScanScreenState extends ConsumerState<PairScanScreen> {
     if (!mounted) return;
     switch (result) {
       case Ok():
-        context.goNamed(AppRoute.home.name);
+        // Pair is not done yet: B must show its response for A to scan.
+        context.goNamed(AppRoute.pairRespond.name);
       case Err(:final failure):
         setState(() => _error = failure.message);
     }
@@ -91,6 +93,7 @@ class _PairScanScreenState extends ConsumerState<PairScanScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(title: const Text('Me uno')),
       body: SafeArea(
         child: Center(

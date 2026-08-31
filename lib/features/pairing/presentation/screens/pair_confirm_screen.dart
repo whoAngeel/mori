@@ -3,55 +3,47 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-import '../../../../core/error/failures.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/ink_colors.dart';
 import '../../../../core/utils/result.dart';
 import '../../../../core/widgets/eyebrow.dart';
 import '../../../../core/widgets/ghost_button.dart';
 import '../../../../core/widgets/ink_button.dart';
-import '../../../pairing/domain/name_validation.dart';
-import '../sync_messages.dart';
-import '../providers/sync_notifier.dart';
+import '../../domain/repositories/pairing_repository.dart';
+import '../providers/pair_qr_codec.dart';
+import '../providers/pairing_notifier.dart';
 
-/// Recovers this device's board from a partner's RESTORE QR (reached only from
-/// onboarding). Accepts only the RESTORE kind: SYNC and PAIR are rejected by
-/// the repository. The person types their own name (it does not travel).
-class RestoreScanScreen extends ConsumerStatefulWidget {
-  /// Creates the restore-scan screen.
-  const RestoreScanScreen({super.key});
+/// Second half of the pairing ceremony, slot A side.
+///
+/// A created the challenge and showed the invite; now A scans B's response QR
+/// so it can record B's name and installId ([ApplyPairOutcome.partnerLinked]).
+/// Only then is the pair complete on both devices.
+///
+/// Scanner rules (design §7): QR-only, `noDuplicates`, debounced to the first
+/// code, controller disposed in [dispose], permission explained on screen.
+class PairConfirmScreen extends ConsumerStatefulWidget {
+  /// Creates the confirm screen.
+  const PairConfirmScreen({super.key});
 
   @override
-  ConsumerState<RestoreScanScreen> createState() => _RestoreScanScreenState();
+  ConsumerState<PairConfirmScreen> createState() => _PairConfirmScreenState();
 }
 
-class _RestoreScanScreenState extends ConsumerState<RestoreScanScreen> {
-  final _nameController = TextEditingController();
+class _PairConfirmScreenState extends ConsumerState<PairConfirmScreen> {
   MobileScannerController? _scanner;
   bool _scanning = false;
   bool _handled = false;
-  String? _error;
   String? _message;
-  bool _restored = false;
+  bool _done = false;
 
   @override
   void dispose() {
-    _nameController.dispose();
     _scanner?.dispose();
     super.dispose();
   }
 
-  String get _name => _nameController.text.trim();
-
   void _start() {
-    final err = NameValidation.validate(_name);
-    if (err != null) {
-      setState(() => _error = err);
-      return;
-    }
-    FocusScope.of(context).unfocus();
     setState(() {
-      _error = null;
       _message = null;
       _handled = false;
       _scanning = true;
@@ -62,7 +54,6 @@ class _RestoreScanScreenState extends ConsumerState<RestoreScanScreen> {
     });
   }
 
-  /// Discards the current controller and arms a fresh scan after a failure.
   Future<void> _rescan() async {
     await _scanner?.dispose();
     if (!mounted) return;
@@ -83,23 +74,26 @@ class _RestoreScanScreenState extends ConsumerState<RestoreScanScreen> {
     _handled = true;
     await _scanner?.stop();
 
-    final result = await ref
-        .read(syncControllerProvider.notifier)
-        .applyRestore(text: raw, localName: _name);
+    final invite = PairQrCodec.decode(raw);
+    if (invite == null) {
+      setState(() => _message = 'No se pudo leer. Inténtalo otra vez.');
+      return;
+    }
+
+    final result =
+        await ref.read(pairingControllerProvider.notifier).applyPartner(invite);
     if (!mounted) return;
     switch (result) {
       case Ok(:final value):
+        final ok = value != ApplyPairOutcome.rejectedForeign;
         setState(() {
-          _restored = true;
-          _message = SyncMessages.forOutcome(value, partnerName: 'tu pareja');
+          _done = ok;
+          _message = ok
+              ? 'Listo, ya se vieron los dos'
+              : 'Ese código no es de este reto';
         });
       case Err(:final failure):
-        setState(() {
-          _restored = false;
-          _message = failure is SyncFailure
-              ? SyncMessages.forFailure(failure)
-              : failure.message;
-        });
+        setState(() => _message = failure.message);
     }
   }
 
@@ -109,8 +103,7 @@ class _RestoreScanScreenState extends ConsumerState<RestoreScanScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(title: const Text('Recuperar mi reto')),
+      appBar: AppBar(title: const Text('Yo empiezo')),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -132,24 +125,15 @@ class _RestoreScanScreenState extends ConsumerState<RestoreScanScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Eyebrow('Tu nombre'),
+        const Eyebrow('Último paso'),
         const SizedBox(height: 12),
-        TextField(
-          controller: _nameController,
-          maxLength: 24,
-          style: theme.textTheme.bodyMedium,
-          decoration: InputDecoration(
-            errorText: _error,
-            hintText: 'Cómo te llamas',
-          ),
-        ),
-        const SizedBox(height: 16),
         Text(
-          'Escanea el código de recuperación de tu pareja.',
+          'Cuando tu pareja ya escaneó tu código, escanea el suyo para '
+          'terminar de emparejar.',
           style: theme.textTheme.bodyMedium!.copyWith(color: colors.inkMuted),
         ),
         const SizedBox(height: 16),
-        InkButton(label: 'Escanear el código', onPressed: _start),
+        InkButton(label: 'Abrir la cámara', onPressed: _start),
       ],
     );
   }
@@ -165,7 +149,7 @@ class _RestoreScanScreenState extends ConsumerState<RestoreScanScreen> {
             style: theme.textTheme.bodyMedium!.copyWith(color: colors.inkBlack),
           ),
           const SizedBox(height: 16),
-          if (_restored)
+          if (_done)
             InkButton(
               label: 'Ir a mi tablero',
               onPressed: () => context.goNamed(AppRoute.home.name),
@@ -173,7 +157,10 @@ class _RestoreScanScreenState extends ConsumerState<RestoreScanScreen> {
           else ...[
             InkButton(label: 'Escanear otra vez', onPressed: _rescan),
             const SizedBox(height: 8),
-            GhostButton(label: 'Cancelar', onPressed: () => context.pop()),
+            GhostButton(
+              label: 'Ahora no',
+              onPressed: () => context.goNamed(AppRoute.home.name),
+            ),
           ],
         ],
       );

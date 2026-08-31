@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mori/core/database/app_database.dart';
@@ -19,6 +20,10 @@ T _ok<T>(Result<T> r) => switch (r) {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  // The two-way ceremony test runs two in-memory databases (two devices) at
+  // once; their executors are independent, so drift's shared-executor warning
+  // does not apply.
+  driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
 
   late AppDatabase db;
   late PairingRepositoryImpl repo;
@@ -125,6 +130,55 @@ void main() {
         expect(config.partnerName, isNull);
       },
     );
+  });
+
+  group('full two-way ceremony (task 4.5)', () {
+    test('after A shows, B joins, B responds, A confirms — both know each other',
+        () async {
+      // Device A is `repo`. Build a second device B.
+      final dbB = AppDatabase(NativeDatabase.memory());
+      addTearDown(dbB.close);
+      final repoB = PairingRepositoryImpl(
+        PairingLocalDataSource(dbB),
+        FakeClock(DateTime(2026, 8, 30)),
+        Random(4321),
+      );
+
+      // 1. A creates the challenge and shows its invite.
+      final invite = _ok(await repo.createChallenge(localName: 'Ana'));
+
+      // 2. B scans it and joins; joinChallenge returns B's response.
+      final response = _ok(await repoB.joinChallenge(
+        inviterInvite: invite,
+        localName: 'Beto',
+      ));
+      expect(response.slot, 1);
+
+      // B already knows A from the invite.
+      final cfgB = await dbB.select(dbB.challengeConfigRows).getSingle();
+      expect(cfgB.pairingId, invite.pairingId);
+      expect(cfgB.partnerName, 'Ana');
+      expect(cfgB.partnerInstallId, invite.installId);
+
+      // 3. B re-builds the same response for display (restart-safe path).
+      final rebuilt = _ok(await repoB.buildPairInvite());
+      expect(rebuilt.slot, 1);
+      expect(rebuilt.pairingId, invite.pairingId);
+      expect(rebuilt.installId, response.installId);
+      expect(rebuilt.name, 'Beto');
+
+      // 4. A scans B's response and confirms.
+      final outcome = _ok(await repo.applyPairInvite(rebuilt));
+      expect(outcome, ApplyPairOutcome.partnerLinked);
+
+      final cfgA = await db.select(db.challengeConfigRows).getSingle();
+      expect(cfgA.partnerName, 'Beto');
+      expect(cfgA.partnerInstallId, response.installId);
+      // A's board is untouched — still 365 free.
+      final boxesA = await db.select(db.ownBoxes).get();
+      expect(boxesA.length, 365);
+      expect(boxesA.every((b) => b.status == 0), isTrue);
+    });
   });
 
   group('watchPairingState', () {

@@ -68,6 +68,7 @@ técnico. Están en orden de impacto.
 | **D18** | ¿Qué pasa si alguien reinstala y pierde todo? | El payload lleva un `installId` aleatorio. Si cambia, el receptor sabe que hubo reinstalación y acepta el snapshot aunque su `stateVersion` haya vuelto a cero. Y como el otro teléfono ya guarda tu snapshot completo, **la pareja es tu respaldo**: el QR `RESTORE` es la puerta para sacarlo de ahí, y **está dentro del MVP** (§7). |
 | **D20** | ¿Se puede recuperar el tablero tras perder el teléfono? | **Sí.** `RESTORE` (kind `0x03`) devuelve las 365 casillas desde el teléfono de la pareja. Vuelven los estados, el `pairingId`, el slot, la fecha de inicio y el nombre de la pareja; **no** vuelven las fechas de sorteo y pago, ni lo hecho después de la última sincronización. La app lo dice con esas palabras en lugar de fingir una recuperación completa. |
 | **D19** | ¿Cómo se muestra la desincronización? | Pátina de tinta: el tablero de la pareja se "destiñe" por pasos conforme envejece el último escaneo. Detalle en [`docs/design-system.md`](docs/design-system.md). |
+| **D21** | ¿Se permite reporte de crash? | **Sí, con opt-in.** Sentry, apagado por defecto, se pregunta una vez en el primer arranque y se puede revocar en Ajustes. Solo errores: sin *performance*, sin sesiones, sin PII (stack trace + modelo de teléfono, nunca nombres/montos/tablero). No cambia D1–D14: los datos del reto siguen sin cruzar la red. |
 
 ### Supuestos declarados (no se preguntaron, se asumen)
 
@@ -218,8 +219,9 @@ un reto en curso; comunicar con precisión qué se recuperó y qué no.
 
 | Área | Requisito |
 |---|---|
-| **Offline** | La app **nunca** hace una petición de red. Sin `http`, sin `dio`, sin fuentes remotas. Las tipografías van empaquetadas en `assets/`. |
-| **Privacidad** | Nada sale del dispositivo salvo lo que aparece en un QR mostrado voluntariamente. Sin analítica, sin crash reporting, sin identificadores de publicidad. |
+| **Offline** | Los **datos del reto** nunca cruzan la red: no hay backend, no hay sincronización por servidor, las tipografías van empaquetadas en `assets/`. La única salida de red posible es un reporte de crash (ver **Telemetría**). |
+| **Privacidad** | Del dispositivo solo sale: (1) lo que aparece en un QR mostrado voluntariamente, y (2) —si el usuario lo acepta— reportes de crash. Sin analítica de uso, sin identificadores de publicidad. |
+| **Telemetría** | Reporte de crash vía Sentry, **opt-in** en el primer arranque y apagado por defecto. Sin *performance monitoring*, sin sesiones de release-health, sin PII: el evento lleva el stack trace y el modelo del teléfono, no nombres, montos ni el tablero. Revocable en Ajustes. La decisión D18 lo justifica. |
 | **Permisos** | Solo `CAMERA`, y solo se pide al entrar a escanear. La primera vez se explica antes de pedirlo. |
 | **Rendimiento** | La cuadrícula de 365 casillas usa `SliverGrid` con `itemBuilder` perezoso. Codificar o decodificar el payload debe tardar < 5 ms. El QR se genera una sola vez por estado, no en cada frame. |
 | **Gama baja** | Sin blur, sin sombras costosas, sin `BackdropFilter`. Objetivo: 60 fps en un dispositivo de 2 GB de RAM. |

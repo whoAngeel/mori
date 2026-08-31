@@ -6,6 +6,8 @@ import '../../features/challenge/presentation/screens/board_screen.dart';
 import '../../features/challenge/presentation/screens/home_screen.dart';
 import '../../features/pairing/presentation/providers/pairing_notifier.dart';
 import '../../features/pairing/presentation/screens/onboarding_screen.dart';
+import '../../features/pairing/presentation/screens/pair_confirm_screen.dart';
+import '../../features/pairing/presentation/screens/pair_respond_screen.dart';
 import '../../features/pairing/presentation/screens/pair_scan_screen.dart';
 import '../../features/pairing/presentation/screens/pair_show_screen.dart';
 import '../../features/sync/presentation/screens/partner_board_screen.dart';
@@ -28,6 +30,12 @@ enum AppRoute {
 
   /// `/pair/scan`
   pairScan,
+
+  /// `/onboarding/pair/respond` — slot B shows its response QR.
+  pairRespond,
+
+  /// `/onboarding/pair/confirm` — slot A scans slot B's response.
+  pairConfirm,
 
   /// `/restore/scan` — reached only from onboarding.
   restoreScan,
@@ -71,8 +79,12 @@ GoRouter goRouter(Ref ref) {
     refreshListenable: refresh,
     redirect: (context, state) {
       final pairing = ref.read(pairingStateProvider);
-      // Until the first value arrives, don't redirect.
-      final paired = pairing.value?.isPaired ?? false;
+      // No decision until the pairing state is actually known. A StreamProvider
+      // can be momentarily value-less (first listen, a re-subscribe); treating
+      // that as "unpaired" bounces a paired user out of a deep screen and then
+      // back to home once the value returns.
+      if (!pairing.hasValue) return null;
+      final paired = pairing.requireValue.isPaired;
       final path = state.uri.path;
 
       // The whole onboarding flow (pairing + restore-scan) is nested under
@@ -101,6 +113,16 @@ GoRouter goRouter(Ref ref) {
             path: 'pair/scan',
             name: AppRoute.pairScan.name,
             builder: (context, state) => const PairScanScreen(),
+          ),
+          GoRoute(
+            path: 'pair/respond',
+            name: AppRoute.pairRespond.name,
+            builder: (context, state) => const PairRespondScreen(),
+          ),
+          GoRoute(
+            path: 'pair/confirm',
+            name: AppRoute.pairConfirm.name,
+            builder: (context, state) => const PairConfirmScreen(),
           ),
           GoRoute(
             path: 'restore/scan',
