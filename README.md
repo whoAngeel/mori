@@ -179,7 +179,39 @@ companions).
 
 ---
 
-## 5. Renombrar el proyecto al clonar
+## 5. Ejecutar en un emulador Android
+
+Este proyecto tiene configurada la plataforma **Android**. Para ejecutarlo en un
+emulador:
+
+```bash
+# 1. Lista los emuladores disponibles
+flutter emulators
+
+# 2. Arranca uno por su id (ej: Pixel_8a)
+flutter emulators --launch Pixel_8a
+
+# 3. Con el emulador ya abierto, verifica que Flutter lo detecta
+flutter devices
+
+# 4. Ejecuta la app
+flutter run
+```
+
+Si `flutter run` detecta varios dispositivos, selecciona el emulador con
+`-d <device_id>` (el id que aparece en `flutter devices`), por ejemplo:
+
+```bash
+flutter run -d emulator-5554
+```
+
+> Requisitos previos: haber corrido `flutter pub get` y el codegen
+> (`dart run build_runner build`) de la sección 4. Si no tienes ningún emulador,
+> créalo con `flutter emulators --create` o desde Android Studio (Device Manager).
+
+---
+
+## 6. Renombrar el proyecto al clonar
 
 ```bash
 ./rename_project.sh <nuevo_nombre> [dominio_android]
