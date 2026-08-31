@@ -330,8 +330,9 @@
   pareja ve *"reinstaló la app"* **sin** la frase de pérdida de avance.
   _Req: 11.6, 11.10, 11.11, 11.12_
 
-- [ ] **8.6** Actualizar el `README.md`: sustituir la documentación de la
-  plantilla por la del producto, con enlaces a `PRD.md` y a `docs/`.
+- [x] **8.6** Actualizar el `README.md`: sustituir la documentación de la
+  plantilla por la del producto, con enlaces a `PRD.md` y a `docs/`. Capturas
+  movidas a `docs/screenshots/`, fuente del ícono a `assets/icon/`.
 
 - [x] **8.7** Crash reporting opt-in (PRD D21). `sentry_flutter` en
   `pubspec.yaml`. `core/telemetry/`: `TelemetryConsent` (elección en un JSON

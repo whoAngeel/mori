@@ -51,4 +51,4 @@ app.*.map.json
 
 # Artefactos sueltos de desarrollo (no son fuente del proyecto)
 custom_lint.log
-/logo-v1.jpeg
+/flutter_*.png
