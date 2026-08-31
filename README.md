@@ -250,3 +250,15 @@ rename setBundleId --value "com.acme.awesome_app"
    `schemaVersion` + migración.
 3. Añade la ruta en `core/router/app_router.dart` (`AppRoute` + `GoRoute`).
 4. `dart run build_runner build`.
+
+---
+
+## Capturas
+
+![Captura 1](flutter_01.png)
+![Captura 2](flutter_02.png)
+![Captura 3](flutter_03.png)
+![Captura 4](flutter_04.png)
+![Captura 5](flutter_05.png)
+![Captura 6](flutter_06.png)
+![Captura 7](flutter_07.png)

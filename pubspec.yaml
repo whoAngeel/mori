@@ -68,6 +68,20 @@ dev_dependencies:
   custom_lint: ^0.8.0
   drift_dev: ^2.26.0
 
+  # App icon generation (build-time only, not shipped)
+  flutter_launcher_icons: ^0.14.4
+
+# App icon — the sealed red disc on `paper`. Legacy icon fills the square;
+# the adaptive icon is the disc alone on a `paper` background so the launcher
+# mask crops the transparent canvas, not the plate.
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icon/ic_launcher.png"
+  adaptive_icon_background: "#E8E9E3"
+  adaptive_icon_foreground: "assets/icon/ic_launcher_fg.png"
+  min_sdk_android: 21
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
