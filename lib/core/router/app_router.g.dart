@@ -8,23 +8,23 @@ part of 'app_router.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The app's [GoRouter], exposed as a Riverpod provider so routing can react to
-/// other providers (auth state, feature flags, …) via `ref.watch` +
-/// `refreshListenable`.
+/// The app's [GoRouter]. Redirects by pairing state (design §6): an unpaired
+/// device is pinned to onboarding/pairing; a paired device leaves onboarding
+/// for home.
 
 @ProviderFor(goRouter)
 const goRouterProvider = GoRouterProvider._();
 
-/// The app's [GoRouter], exposed as a Riverpod provider so routing can react to
-/// other providers (auth state, feature flags, …) via `ref.watch` +
-/// `refreshListenable`.
+/// The app's [GoRouter]. Redirects by pairing state (design §6): an unpaired
+/// device is pinned to onboarding/pairing; a paired device leaves onboarding
+/// for home.
 
 final class GoRouterProvider
     extends $FunctionalProvider<GoRouter, GoRouter, GoRouter>
     with $Provider<GoRouter> {
-  /// The app's [GoRouter], exposed as a Riverpod provider so routing can react to
-  /// other providers (auth state, feature flags, …) via `ref.watch` +
-  /// `refreshListenable`.
+  /// The app's [GoRouter]. Redirects by pairing state (design §6): an unpaired
+  /// device is pinned to onboarding/pairing; a paired device leaves onboarding
+  /// for home.
   const GoRouterProvider._()
     : super(
         from: null,
@@ -58,4 +58,4 @@ final class GoRouterProvider
   }
 }
 
-String _$goRouterHash() => r'25856b4fe642d8d98e1068f31b195093dd8d23e0';
+String _$goRouterHash() => r'929e5dad9e399f17482877e86ff0beab10304680';

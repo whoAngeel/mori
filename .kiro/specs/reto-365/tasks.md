@@ -111,39 +111,39 @@
 
 ## Fase 4 — Emparejamiento
 
-- [ ] **4.1** Domain de `pairing`: entidades `PairingState` y `PairInvite`,
+- [x] **4.1** Domain de `pairing`: entidades `PairingState` y `PairInvite`,
   contrato del repositorio, y los casos de uso `WatchPairingState`,
   `CreateChallenge`, `JoinChallenge`, `BuildPairPayload`, `ApplyPairPayload`,
   `RenameParticipants`, `ResetChallenge`.
   _Req: 1.2, 1.4, 1.5, 9.1_
 
-- [ ] **4.2** Data de `pairing`: datasource y repositorio.
+- [x] **4.2** Data de `pairing`: datasource y repositorio.
   `CreateChallenge` siembra las 365 casillas y pone `stateVersion = 0` **en una
   sola transacción**. Prueba en memoria: exactamente 365 filas, todas `free`.
   _Req: 1.2, 2.1_
 
-- [ ] **4.3** `ApplyPairPayload` con las tres ramas: sin emparejamiento propio
+- [x] **4.3** `ApplyPairPayload` con las tres ramas: sin emparejamiento propio
   (adoptar), con emparejamiento y `pairingId` igual (solo guardar nombre e
   `installId`, **sin tocar las casillas**), `pairingId` distinto (rechazar sin
   escribir). Una prueba por rama.
   _Req: 1.4, 1.5, 1.7_
 
-- [ ] **4.4** Componentes del sistema de diseño que hacen falta ya:
+- [x] **4.4** Componentes del sistema de diseño que hacen falta ya:
   `InkButton`, `GhostButton`, `Eyebrow`, `EmptyPlate`
   (`docs/design-system.md` §7). Sin sombras, sin ripple.
   _Req: 10.5_
 
-- [ ] **4.5** `OnboardingScreen` con **tres** opciones (Yo empiezo / Me uno /
+- [x] **4.5** `OnboardingScreen` con **tres** opciones (Yo empiezo / Me uno /
   Recuperar mi reto), `PairShowScreen` (QR con `qr_flutter`) y `PairScanScreen`.
   Copy exacto de `docs/design-system.md` §8. La tercera opción puede quedar
   apuntando a un `Placeholder` hasta la tarea 6.10.
   _Req: 1.1, 1.3, 1.6, 11.5_
 
-- [ ] **4.6** Router: rutas de `pairing` y `redirect` global por estado de
+- [x] **4.6** Router: rutas de `pairing` y `redirect` global por estado de
   emparejamiento (diseño §6).
   _Req: 1.1_
 
-- [ ] **4.7** Validación del nombre: 1 a 24 bytes UTF-8, con mensaje en la propia
+- [x] **4.7** Validación del nombre: 1 a 24 bytes UTF-8, con mensaje en la propia
   entrada. Prueba con emoji, que ocupan más de un byte.
   _Req: 1.9_
 
