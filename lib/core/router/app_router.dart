@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../features/challenge/presentation/screens/board_screen.dart';
+import '../../features/challenge/presentation/screens/home_screen.dart';
 import '../../features/pairing/presentation/providers/pairing_notifier.dart';
 import '../../features/pairing/presentation/screens/onboarding_screen.dart';
 import '../../features/pairing/presentation/screens/pair_scan_screen.dart';
@@ -26,6 +28,9 @@ enum AppRoute {
 
   /// `/`
   home,
+
+  /// `/board`
+  board,
 }
 
 /// The app's [GoRouter]. Redirects by pairing state (design §6): an unpaired
@@ -81,7 +86,12 @@ GoRouter goRouter(Ref ref) {
       GoRoute(
         path: '/',
         name: AppRoute.home.name,
-        builder: (context, state) => const Placeholder(),
+        builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: '/board',
+        name: AppRoute.board.name,
+        builder: (context, state) => const BoardScreen(),
       ),
     ],
   );

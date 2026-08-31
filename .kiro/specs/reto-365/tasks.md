@@ -151,44 +151,44 @@
 
 ## Fase 5 — Tablero, sorteo y pagos
 
-- [ ] **5.1** Domain de `challenge`: `Box`, `BoxStatus`, `ChallengeProgress` y
+- [x] **5.1** Domain de `challenge`: `Box`, `BoxStatus`, `ChallengeProgress` y
   la matemática de `docs/data-model.md` §4, en Dart puro.
   _Req: 5.1, 5.3_
 
-- [ ] **5.2** Pruebas de `pendingDraws` — **obligatorias**: los seis casos límite
+- [x] **5.2** Pruebas de `pendingDraws` — **obligatorias**: los seis casos límite
   de la tabla de `docs/data-model.md` §4, incluidos el reloj hacia atrás y el
   día 500.
   _Req: 3.1, 3.7_
 
-- [ ] **5.3** Data de `challenge`: datasource con `watchBoxes`, `drawBox`,
+- [x] **5.3** Data de `challenge`: datasource con `watchBoxes`, `drawBox`,
   `markPaid`, `unmarkPaid`. Cada mutación sube `stateVersion` **en la misma
   transacción**. Prueba en memoria de esa atomicidad.
   _Req: 3.4, 4.1, 4.2_
 
-- [ ] **5.4** Casos de uso `DrawNextBox`, `MarkBoxPaid`, `UnmarkBoxPaid`,
+- [x] **5.4** Casos de uso `DrawNextBox`, `MarkBoxPaid`, `UnmarkBoxPaid`,
   `WatchBoxes`, `WatchProgress`. `Random` inyectado por provider.
   _Req: 3.4, 3.9, 4.1, 4.2_
 
-- [ ] **5.5** Pruebas del sorteo: 365 sorteos consumen exactamente las 365
+- [x] **5.5** Pruebas del sorteo: 365 sorteos consumen exactamente las 365
   casillas sin repetir; el 366.º falla con `NoBoxesLeft`; con `pending == 0`
   falla con `NoDrawsPending`; una casilla `assigned` nunca vuelve a `free`.
   _Req: 3.6, 3.8_
 
-- [ ] **5.6** `InkBox`: la casilla sellada de `docs/design-system.md` §4, con el
+- [x] **5.6** `InkBox`: la casilla sellada de `docs/design-system.md` §4, con el
   desfase determinista y los tres estados distinguidos por forma y relleno.
   Golden tests en los dos temas. Incluir `Semantics`.
   _Req: 2.3, 2.4_
 
-- [ ] **5.7** `ChallengeNotifier` + `HomeScreen`: encabezado de progreso, botón
+- [x] **5.7** `ChallengeNotifier` + `HomeScreen`: encabezado de progreso, botón
   de sorteo con su cuenta de pendientes, y lista de por pagar ordenada por
   antigüedad. Botón deshabilitado mientras la operación está en vuelo.
   _Req: 3.2, 3.3, 3.5, 4.3, 4.4, 5.1_
 
-- [ ] **5.8** `BoardScreen`: `SliverGrid.builder` de 12 columnas, filtros, y
+- [x] **5.8** `BoardScreen`: `SliverGrid.builder` de 12 columnas, filtros, y
   `RuleOf365` al pie. Bajar a 7 columnas si el escalado de texto supera 1.3×.
   _Req: 2.2, 2.5, 2.6_
 
-- [ ] **5.9** Estado final: al llegar a 365 casillas sorteadas, *"Terminaste los
+- [x] **5.9** Estado final: al llegar a 365 casillas sorteadas, *"Terminaste los
   365. $66,795."* y sorteo desactivado para siempre. Prueba de widget.
   _Req: 3.8_
 
