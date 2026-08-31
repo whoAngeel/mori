@@ -196,20 +196,20 @@
 
 ## Fase 6 — Sincronización
 
-- [ ] **6.1** Domain de `sync`: `SyncSnapshot`, `SyncOutcome` sellado, contrato
+- [x] **6.1** Domain de `sync`: `SyncSnapshot`, `SyncOutcome` sellado, contrato
   del repositorio, y los casos de uso `BuildSyncPayload`, `ApplySyncPayload`,
   `WatchPartnerSnapshot`, `WatchPartnerBoxes`.
   _Req: 6.1, 7.4_
 
-- [ ] **6.2** `SyncRepositoryImpl` con la regla de aceptación de
+- [x] **6.2** `SyncRepositoryImpl` con la regla de aceptación de
   `docs/qr-sync-protocol.md` §8 y las comprobaciones 8–10 del §7.
   _Req: 7.5, 7.6, 7.7, 7.8, 7.9_
 
-- [ ] **6.3** `SyncLocalDataSource.applySnapshot`: **una sola transacción** que
+- [x] **6.3** `SyncLocalDataSource.applySnapshot`: **una sola transacción** que
   reemplaza las 365 filas de `PartnerBoxes` y actualiza `PartnerSnapshots`.
   _Req: 7.4_
 
-- [ ] **6.4** Pruebas de merge — **obligatorias antes de dar por cerrado el MVP**:
+- [x] **6.4** Pruebas de merge — **obligatorias antes de dar por cerrado el MVP**:
   - idempotencia: aplicar el mismo payload dos veces deja la base idéntica;
   - monotonicidad: un `stateVersion` menor no escribe nada;
   - `installId` distinto acepta aunque la versión baje, y reinicia la línea base;
@@ -217,39 +217,39 @@
   - `PartnerBoxes` nunca queda con un número de filas distinto de 0 o 365.
   _Req: 7.5, 7.6, 7.7, 7.12_
 
-- [ ] **6.5** `syncQrPayloadProvider` memoizado por `stateVersion`, y
+- [x] **6.5** `syncQrPayloadProvider` memoizado por `stateVersion`, y
   `SyncShowScreen` con brillo al máximo, QR en negro sobre `plate`, corrección M
   y 16 dp de zona de silencio. Restaurar el brillo al salir.
   _Req: 6.1, 6.3, 6.4, 6.5_
 
-- [ ] **6.6** `SyncScanScreen` con `mobile_scanner`: explicación previa al
+- [x] **6.6** `SyncScanScreen` con `mobile_scanner`: explicación previa al
   permiso, antirrebote que detiene el escáner al primer código,
   `DetectionSpeed.noDuplicates`, formato limitado a QR, liberación en `dispose`.
   _Req: 7.1, 7.2_
 
-- [ ] **6.7** Mapear cada `SyncFailure` y cada `SyncOutcome` a su mensaje exacto
+- [x] **6.7** Mapear cada `SyncFailure` y cada `SyncOutcome` a su mensaje exacto
   de `docs/design-system.md` §8, con `switch` exhaustivo sobre el sealed.
   Incluir el recordatorio de completar el ritual en la otra dirección.
   _Req: 7.5, 7.6, 7.8, 7.9, 7.11_
 
-- [ ] **6.8** `SyncHubScreen`: los dos pasos numerados y la fecha del último
+- [x] **6.8** `SyncHubScreen`: los dos pasos numerados y la fecha del último
   escaneo.
   _Req: 7.11_
 
-- [ ] **6.9** `BuildRestorePayload`: lee `PartnerBoxes` + `PartnerSnapshots` y
+- [x] **6.9** `BuildRestorePayload`: lee `PartnerBoxes` + `PartnerSnapshots` y
   arma el `RESTORE` de `docs/qr-sync-protocol.md` §5.2. Devuelve
   `NothingToRestore` si no hay snapshot. Prueba: **no modifica ninguna tabla ni
   sube `stateVersion`**.
   _Req: 11.2, 11.3, 11.4_
 
-- [ ] **6.10** `ApplyRestorePayload` con la guarda dura de
+- [x] **6.10** `ApplyRestorePayload` con la guarda dura de
   `docs/qr-sync-protocol.md` §8.3, en el **repositorio**, no en la UI. Siembra
   las 365 casillas con fechas en `null`, genera un `localInstallId` nuevo, adopta
   `restoredStateVersion`, y **no** toca `PartnerBoxes` ni `PartnerSnapshots`.
   Todo en una transacción.
   _Req: 11.6, 11.7, 11.8_
 
-- [ ] **6.11** Pruebas de `RESTORE` — **obligatorias**:
+- [x] **6.11** Pruebas de `RESTORE` — **obligatorias**:
   - con `ChallengeConfigRows` presente, devuelve `RestoreNotApplicable` y la base
     queda byte a byte idéntica;
   - sin configuración, siembra 365 casillas con los estados correctos y **ambas
@@ -259,17 +259,17 @@
   - `PartnerBoxes` y `PartnerSnapshots` siguen vacías tras recuperar.
   _Req: 11.6, 11.7, 11.8_
 
-- [ ] **6.12** `RestoreShowScreen` (emisión desde Ajustes) y `RestoreScanScreen`
+- [x] **6.12** `RestoreShowScreen` (emisión desde Ajustes) y `RestoreScanScreen`
   (desde `/onboarding`, con entrada de nombre propio). Cada pantalla acepta **un
   solo `kind`** y rechaza los otros dos. Mensaje final con `daysStale`.
   _Req: 11.1, 11.5, 11.9, 11.10_
 
-- [ ] **6.13** Tolerancia a fechas nulas en toda la UI: `PendingPaymentsList`
+- [x] **6.13** Tolerancia a fechas nulas en toda la UI: `PendingPaymentsList`
   ordena por `drawnAtMillis` con respaldo a `day`; la etiqueta de antigüedad
   degrada a *"sin fecha"*. Prueba de widget con un tablero recuperado.
   _Req: 11.11_
 
-- [ ] **6.14** Mensaje diferenciado de reinstalación: comparar casillas no libres
+- [x] **6.14** Mensaje diferenciado de reinstalación: comparar casillas no libres
   entrantes contra guardadas para distinguir pérdida de recuperación
   (`docs/qr-sync-protocol.md` §8.1). Una prueba por rama.
   _Req: 11.12_
@@ -278,16 +278,16 @@
 
 ## Fase 7 — La pareja
 
-- [ ] **7.1** `PatinaPanel` y `FreshnessLabel`: la tabla de pátina de
+- [x] **7.1** `PatinaPanel` y `FreshnessLabel`: la tabla de pátina de
   `docs/design-system.md` §5, con piso 0.35, opacidad **solo sobre las tintas** y
   la etiqueta de días siempre a contraste completo.
   _Req: 8.2, 8.3, 8.4_
 
-- [ ] **7.2** Panel de la pareja en `HomeScreen` y `PartnerBoardScreen`, con el
+- [x] **7.2** Panel de la pareja en `HomeScreen` y `PartnerBoardScreen`, con el
   progreso calculado con **su** `startEpochDay`.
   _Req: 8.1, 8.5_
 
-- [ ] **7.3** Aviso persistente cuando `startEpochDay` difiere, y aviso de
+- [x] **7.3** Aviso persistente cuando `startEpochDay` difiere, y aviso de
   reinstalación cuando cambió el `installId`.
   _Req: 7.7, 7.10_
 

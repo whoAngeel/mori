@@ -8,6 +8,12 @@ import '../../features/pairing/presentation/providers/pairing_notifier.dart';
 import '../../features/pairing/presentation/screens/onboarding_screen.dart';
 import '../../features/pairing/presentation/screens/pair_scan_screen.dart';
 import '../../features/pairing/presentation/screens/pair_show_screen.dart';
+import '../../features/sync/presentation/screens/partner_board_screen.dart';
+import '../../features/sync/presentation/screens/restore_scan_screen.dart';
+import '../../features/sync/presentation/screens/restore_show_screen.dart';
+import '../../features/sync/presentation/screens/sync_hub_screen.dart';
+import '../../features/sync/presentation/screens/sync_scan_screen.dart';
+import '../../features/sync/presentation/screens/sync_show_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -23,14 +29,29 @@ enum AppRoute {
   /// `/pair/scan`
   pairScan,
 
-  /// `/restore/scan` — reached only from onboarding (placeholder until 6.12).
+  /// `/restore/scan` — reached only from onboarding.
   restoreScan,
+
+  /// `/restore/show` — reached only from settings.
+  restoreShow,
 
   /// `/`
   home,
 
   /// `/board`
   board,
+
+  /// `/sync`
+  sync,
+
+  /// `/sync/show`
+  syncShow,
+
+  /// `/sync/scan`
+  syncScan,
+
+  /// `/partner`
+  partner,
 }
 
 /// The app's [GoRouter]. Redirects by pairing state (design §6): an unpaired
@@ -81,7 +102,12 @@ GoRouter goRouter(Ref ref) {
       GoRoute(
         path: '/restore/scan',
         name: AppRoute.restoreScan.name,
-        builder: (context, state) => const Placeholder(),
+        builder: (context, state) => const RestoreScanScreen(),
+      ),
+      GoRoute(
+        path: '/restore/show',
+        name: AppRoute.restoreShow.name,
+        builder: (context, state) => const RestoreShowScreen(),
       ),
       GoRoute(
         path: '/',
@@ -92,6 +118,26 @@ GoRouter goRouter(Ref ref) {
         path: '/board',
         name: AppRoute.board.name,
         builder: (context, state) => const BoardScreen(),
+      ),
+      GoRoute(
+        path: '/sync',
+        name: AppRoute.sync.name,
+        builder: (context, state) => const SyncHubScreen(),
+      ),
+      GoRoute(
+        path: '/sync/show',
+        name: AppRoute.syncShow.name,
+        builder: (context, state) => const SyncShowScreen(),
+      ),
+      GoRoute(
+        path: '/sync/scan',
+        name: AppRoute.syncScan.name,
+        builder: (context, state) => const SyncScanScreen(),
+      ),
+      GoRoute(
+        path: '/partner',
+        name: AppRoute.partner.name,
+        builder: (context, state) => const PartnerBoardScreen(),
       ),
     ],
   );

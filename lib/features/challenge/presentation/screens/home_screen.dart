@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/ink_colors.dart';
 import '../../../../core/utils/result.dart';
+import '../../../sync/presentation/widgets/discrepancy_notice.dart';
+import '../../../sync/presentation/widgets/partner_panel.dart';
 import '../providers/challenge_notifier.dart';
 import '../widgets/draw_button.dart';
 import '../widgets/pending_payments_list.dart';
@@ -81,6 +83,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           .markPaid(day),
                     ),
                   ),
+                  const SizedBox(height: 24),
+                  Divider(color: colors.rule, height: 1),
+                  const SizedBox(height: 24),
+                  const DiscrepancyNotice(),
+                  const PartnerPanel(),
                 ],
               ),
             ),
