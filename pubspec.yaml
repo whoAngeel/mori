@@ -45,6 +45,10 @@ dependencies:
   drift_flutter: ^0.2.8
   path_provider: ^2.1.5
 
+  # QR sync (offline, camera-based)
+  mobile_scanner: ^7.4.0   # escanear QR (requiere Flutter >= 3.29)
+  qr_flutter: ^4.1.0       # dibujar QR
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -68,6 +72,24 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  # Fonts are bundled (no google_fonts): this app never touches the network.
+  # See docs/design-system.md §3.
+  fonts:
+    - family: Archivo
+      fonts:
+        - asset: assets/fonts/Archivo-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Archivo-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Archivo-ExtraBold.ttf
+          weight: 800
+    - family: PlexMono
+      fonts:
+        - asset: assets/fonts/IBMPlexMono-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/IBMPlexMono-SemiBold.ttf
+          weight: 600
 
   # To add assets to your application, add an assets section, like this:
   # assets:

@@ -3,7 +3,6 @@ import 'package:drift_flutter/drift_flutter.dart';
 
 // The database is the single place that knows about *every* feature table.
 // This is the one allowed dependency from `core` into `features`.
-import '../../features/counter/data/tables/counter_table.dart';
 
 part 'app_database.g.dart';
 
@@ -11,7 +10,7 @@ part 'app_database.g.dart';
 ///
 /// Register a feature's table here, run `build_runner`, then use it through a
 /// DAO or directly from a datasource.
-@DriftDatabase(tables: [CounterEntries])
+@DriftDatabase(tables: [])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 

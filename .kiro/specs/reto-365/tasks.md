@@ -17,18 +17,18 @@
   `Placeholder` temporal.
   _Req: 10.8_
 
-- [ ] **0.2** Añadir `mobile_scanner: ^7.4.0` y `qr_flutter: ^4.1.0` a
+- [x] **0.2** Añadir `mobile_scanner: ^7.4.0` y `qr_flutter: ^4.1.0` a
   `pubspec.yaml`. Verificar que no entra ninguna dependencia de red.
   `flutter pub get`.
   _Req: 10.1_
 
-- [ ] **0.3** Descargar las fuentes OFL a `assets/fonts/`
+- [x] **0.3** Descargar las fuentes OFL a `assets/fonts/`
   (`Archivo-{Regular,SemiBold,ExtraBold}.ttf`,
   `IBMPlexMono-{Regular,SemiBold}.ttf`) y declararlas en `pubspec.yaml` según
   `docs/design-system.md` §3. **No** usar `google_fonts`.
   _Req: 10.3_
 
-- [ ] **0.4** Declarar `<uses-permission android:name="android.permission.CAMERA" />`
+- [x] **0.4** Declarar `<uses-permission android:name="android.permission.CAMERA" />`
   en `android/app/src/main/AndroidManifest.xml`.
   _Req: 7.1, 10.2_
 
