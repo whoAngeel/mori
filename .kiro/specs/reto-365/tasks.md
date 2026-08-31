@@ -64,12 +64,12 @@
 
 ## Fase 2 — Esquema
 
-- [ ] **2.1** Crear las cuatro tablas Drift según `docs/data-model.md` §2:
+- [x] **2.1** Crear las cuatro tablas Drift según `docs/data-model.md` §2:
   `ChallengeConfigRows`, `OwnBoxes`, `PartnerBoxes`, `PartnerSnapshots`, cada una
   en su feature. Registrarlas en `app_database.dart`.
   _Req: 2.1_
 
-- [ ] **2.2** Subir el `schemaVersion` de Drift a **2** y escribir la migración
+- [x] **2.2** Subir el `schemaVersion` de Drift a **2** y escribir la migración
   1 → 2 (tira `counter_entries`, crea las cuatro tablas). Prueba con
   `NativeDatabase.memory()`.
   _Req: 10.8_
@@ -78,18 +78,18 @@
 
 ## Fase 3 — Códec del QR *(sin UI, todo probable en solitario)*
 
-- [ ] **3.1** `sync/data/codec/crc32.dart`: CRC-32/IEEE con tabla perezosa.
+- [x] **3.1** `sync/data/codec/crc32.dart`: CRC-32/IEEE con tabla perezosa.
   Prueba contra valores conocidos.
   _Req: 7.3_
 
-- [ ] **3.2** `sync/data/codec/sync_codec.dart`: `encodeSync`, `encodePair`,
+- [x] **3.2** `sync/data/codec/sync_codec.dart`: `encodeSync`, `encodePair`,
   `encodeRestore` y `decode`, siguiendo byte por byte `docs/qr-sync-protocol.md`
   §4 y §5. Incluye el empaquetado del bitmap de 2 bits. `decode` devuelve un
   sealed con las tres variantes; `RESTORE` es de longitud variable, así que su
   longitud se valida **después** de leer `senderNameLen`.
   _Req: 6.2, 11.3_
 
-- [ ] **3.3** Pruebas del códec — **obligatorias antes de seguir**:
+- [x] **3.3** Pruebas del códec — **obligatorias antes de seguir**:
   - round-trip de estados aleatorios con semilla fija, para los tres `kind`;
   - `encodeSync(...).length == 158` siempre;
   - vectores de oro V1, V2 y V3 de `docs/qr-sync-protocol.md` §11, byte a byte y
@@ -103,7 +103,7 @@
   - `0b11` en cualquier par de bits produce `MalformedPayload`.
   _Req: 6.2, 7.3, 11.3_
 
-- [ ] **3.4** Orden de validación de `docs/qr-sync-protocol.md` §7,
+- [x] **3.4** Orden de validación de `docs/qr-sync-protocol.md` §7,
   comprobaciones 1–7, dentro del códec. Una prueba por tipo de fallo.
   _Req: 7.3_
 
