@@ -36,10 +36,8 @@ class InkBox extends StatelessWidget {
   final double opacity;
 
   /// Deterministic per-day registration offset, −2..+2 dp on each axis.
-  static Offset misregistration(int day) => Offset(
-        ((day * 37) % 5) - 2.0,
-        ((day * 53) % 5) - 2.0,
-      );
+  static Offset misregistration(int day) =>
+      Offset(((day * 37) % 5) - 2.0, ((day * 53) % 5) - 2.0);
 
   @override
   Widget build(BuildContext context) {
@@ -103,8 +101,7 @@ class _InkBoxPainter extends CustomPainter {
 
     // Ink block (assigned/paid), offset from the outline.
     if (status != BoxStatus.free) {
-      final blockRect =
-          RRect.fromRectAndRadius(rect.shift(offset), radius);
+      final blockRect = RRect.fromRectAndRadius(rect.shift(offset), radius);
       final blockPaint = Paint()..color = ink;
       if (status == BoxStatus.assigned) {
         // Outlined block: 2 dp stroke, no fill.
@@ -131,8 +128,7 @@ class _InkBoxPainter extends CustomPainter {
       BoxStatus.assigned => ink,
       BoxStatus.paid => paper, // knockout
     };
-    final weight =
-        status == BoxStatus.free ? FontWeight.w400 : FontWeight.w600;
+    final weight = status == BoxStatus.free ? FontWeight.w400 : FontWeight.w600;
     final tp = TextPainter(
       text: TextSpan(
         text: '$day',
@@ -150,7 +146,8 @@ class _InkBoxPainter extends CustomPainter {
     tp.paint(
       canvas,
       Offset(
-        (size.width - tp.width) / 2 + (status == BoxStatus.paid ? offset.dx : 0),
+        (size.width - tp.width) / 2 +
+            (status == BoxStatus.paid ? offset.dx : 0),
         (size.height - tp.height) / 2 +
             (status == BoxStatus.paid ? offset.dy : 0),
       ),

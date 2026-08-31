@@ -18,37 +18,34 @@ class SyncLocalDataSource {
   static const _boxCount = 365;
 
   /// Reads the single config row, or null.
-  Future<ChallengeConfigRow?> readConfig() =>
-      (_db.select(_db.challengeConfigRows)..where((t) => t.id.equals(1)))
-          .getSingleOrNull();
+  Future<ChallengeConfigRow?> readConfig() => (_db.select(
+    _db.challengeConfigRows,
+  )..where((t) => t.id.equals(1))).getSingleOrNull();
 
   /// Reads the stored partner snapshot, or null.
-  Future<PartnerSnapshotRow?> readPartnerSnapshot() =>
-      (_db.select(_db.partnerSnapshots)..where((t) => t.id.equals(1)))
-          .getSingleOrNull();
+  Future<PartnerSnapshotRow?> readPartnerSnapshot() => (_db.select(
+    _db.partnerSnapshots,
+  )..where((t) => t.id.equals(1))).getSingleOrNull();
 
   /// Reads this device's own board, ordered by day.
-  Future<List<OwnBoxRow>> readOwnBoxes() =>
-      (_db.select(_db.ownBoxes)
-            ..orderBy([(t) => OrderingTerm(expression: t.day)]))
-          .get();
+  Future<List<OwnBoxRow>> readOwnBoxes() => (_db.select(
+    _db.ownBoxes,
+  )..orderBy([(t) => OrderingTerm(expression: t.day)])).get();
 
   /// Reads the partner replica board, ordered by day.
-  Future<List<PartnerBoxRow>> readPartnerBoxes() =>
-      (_db.select(_db.partnerBoxes)
-            ..orderBy([(t) => OrderingTerm(expression: t.day)]))
-          .get();
+  Future<List<PartnerBoxRow>> readPartnerBoxes() => (_db.select(
+    _db.partnerBoxes,
+  )..orderBy([(t) => OrderingTerm(expression: t.day)])).get();
 
   /// Streams the partner snapshot row (or null).
-  Stream<PartnerSnapshotRow?> watchPartnerSnapshot() =>
-      (_db.select(_db.partnerSnapshots)..where((t) => t.id.equals(1)))
-          .watchSingleOrNull();
+  Stream<PartnerSnapshotRow?> watchPartnerSnapshot() => (_db.select(
+    _db.partnerSnapshots,
+  )..where((t) => t.id.equals(1))).watchSingleOrNull();
 
   /// Streams the partner replica board.
-  Stream<List<PartnerBoxRow>> watchPartnerBoxes() =>
-      (_db.select(_db.partnerBoxes)
-            ..orderBy([(t) => OrderingTerm(expression: t.day)]))
-          .watch();
+  Stream<List<PartnerBoxRow>> watchPartnerBoxes() => (_db.select(
+    _db.partnerBoxes,
+  )..orderBy([(t) => OrderingTerm(expression: t.day)])).watch();
 
   /// Applies an accepted snapshot in one transaction: replaces all 365
   /// `PartnerBoxes` rows and upserts `PartnerSnapshots`.
@@ -64,18 +61,17 @@ class SyncLocalDataSource {
       await _db.transaction(() async {
         await _db.delete(_db.partnerBoxes).go();
         await _db.batch((b) {
-          b.insertAll(
-            _db.partnerBoxes,
-            [
-              for (var day = 1; day <= _boxCount; day++)
-                PartnerBoxesCompanion.insert(
-                  day: Value(day),
-                  status: Value(_wireValue(statuses[day - 1])),
-                ),
-            ],
-          );
+          b.insertAll(_db.partnerBoxes, [
+            for (var day = 1; day <= _boxCount; day++)
+              PartnerBoxesCompanion.insert(
+                day: Value(day),
+                status: Value(_wireValue(statuses[day - 1])),
+              ),
+          ]);
         });
-        await _db.into(_db.partnerSnapshots).insertOnConflictUpdate(
+        await _db
+            .into(_db.partnerSnapshots)
+            .insertOnConflictUpdate(
               PartnerSnapshotsCompanion.insert(
                 id: const Value(1),
                 stateVersion: stateVersion,
@@ -107,7 +103,9 @@ class SyncLocalDataSource {
     assert(statuses.length == _boxCount, 'restore needs exactly 365 states');
     try {
       await _db.transaction(() async {
-        await _db.into(_db.challengeConfigRows).insert(
+        await _db
+            .into(_db.challengeConfigRows)
+            .insert(
               ChallengeConfigRowsCompanion.insert(
                 id: const Value(1),
                 pairingId: pairingId,
@@ -122,16 +120,13 @@ class SyncLocalDataSource {
               ),
             );
         await _db.batch((b) {
-          b.insertAll(
-            _db.ownBoxes,
-            [
-              for (var day = 1; day <= _boxCount; day++)
-                OwnBoxesCompanion.insert(
-                  day: Value(day),
-                  status: Value(_wireValue(statuses[day - 1])),
-                ),
-            ],
-          );
+          b.insertAll(_db.ownBoxes, [
+            for (var day = 1; day <= _boxCount; day++)
+              OwnBoxesCompanion.insert(
+                day: Value(day),
+                status: Value(_wireValue(statuses[day - 1])),
+              ),
+          ]);
         });
       });
     } catch (e) {
@@ -140,8 +135,8 @@ class SyncLocalDataSource {
   }
 
   static int _wireValue(WireBoxState s) => switch (s) {
-        WireBoxState.free => 0,
-        WireBoxState.assigned => 1,
-        WireBoxState.paid => 2,
-      };
+    WireBoxState.free => 0,
+    WireBoxState.assigned => 1,
+    WireBoxState.paid => 2,
+  };
 }

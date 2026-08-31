@@ -70,11 +70,12 @@ class _PairScanScreenState extends ConsumerState<PairScanScreen> {
       return;
     }
 
-    final result =
-        await ref.read(pairingControllerProvider.notifier).joinChallenge(
-              inviterInvite: invite,
-              localName: _nameController.text.trim(),
-            );
+    final result = await ref
+        .read(pairingControllerProvider.notifier)
+        .joinChallenge(
+          inviterInvite: invite,
+          localName: _nameController.text.trim(),
+        );
     if (!mounted) return;
     switch (result) {
       case Ok():
@@ -129,10 +130,7 @@ class _PairScanScreenState extends ConsumerState<PairScanScreen> {
           style: theme.textTheme.bodyMedium!.copyWith(color: colors.inkMuted),
         ),
         const SizedBox(height: 16),
-        InkButton(
-          label: 'Escanear su código',
-          onPressed: _startScanning,
-        ),
+        InkButton(label: 'Escanear su código', onPressed: _startScanning),
       ],
     );
   }
@@ -147,10 +145,7 @@ class _PairScanScreenState extends ConsumerState<PairScanScreen> {
         Expanded(
           child: ClipRRect(
             borderRadius: BorderRadius.circular(2),
-            child: MobileScanner(
-              controller: _scanner,
-              onDetect: _onDetect,
-            ),
+            child: MobileScanner(controller: _scanner, onDetect: _onDetect),
           ),
         ),
         if (_error != null) ...[

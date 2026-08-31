@@ -32,6 +32,7 @@ class _RestoreScanScreenState extends ConsumerState<RestoreScanScreen> {
   bool _handled = false;
   String? _error;
   String? _message;
+  bool _restored = false;
 
   @override
   void dispose() {
@@ -40,16 +41,33 @@ class _RestoreScanScreenState extends ConsumerState<RestoreScanScreen> {
     super.dispose();
   }
 
+  String get _name => _nameController.text.trim();
+
   void _start() {
-    final err = NameValidation.validate(_nameController.text);
+    final err = NameValidation.validate(_name);
     if (err != null) {
       setState(() => _error = err);
       return;
     }
     setState(() {
       _error = null;
+      _message = null;
       _handled = false;
       _scanning = true;
+      _scanner = MobileScannerController(
+        formats: const [BarcodeFormat.qrCode],
+        detectionSpeed: DetectionSpeed.noDuplicates,
+      );
+    });
+  }
+
+  /// Discards the current controller and arms a fresh scan after a failure.
+  Future<void> _rescan() async {
+    await _scanner?.dispose();
+    if (!mounted) return;
+    setState(() {
+      _message = null;
+      _handled = false;
       _scanner = MobileScannerController(
         formats: const [BarcodeFormat.qrCode],
         detectionSpeed: DetectionSpeed.noDuplicates,
@@ -64,22 +82,23 @@ class _RestoreScanScreenState extends ConsumerState<RestoreScanScreen> {
     _handled = true;
     await _scanner?.stop();
 
-    final result =
-        await ref.read(syncControllerProvider.notifier).applyRestore(
-              text: raw,
-              localName: _nameController.text.trim(),
-            );
+    final result = await ref
+        .read(syncControllerProvider.notifier)
+        .applyRestore(text: raw, localName: _name);
     if (!mounted) return;
     switch (result) {
       case Ok(:final value):
-        setState(() => _message = SyncMessages.forOutcome(
-              value,
-              partnerName: 'tu pareja',
-            ));
+        setState(() {
+          _restored = true;
+          _message = SyncMessages.forOutcome(value, partnerName: 'tu pareja');
+        });
       case Err(:final failure):
-        setState(() => _message = failure is SyncFailure
-            ? SyncMessages.forFailure(failure)
-            : failure.message);
+        setState(() {
+          _restored = false;
+          _message = failure is SyncFailure
+              ? SyncMessages.forFailure(failure)
+              : failure.message;
+        });
     }
   }
 
@@ -144,10 +163,16 @@ class _RestoreScanScreenState extends ConsumerState<RestoreScanScreen> {
             style: theme.textTheme.bodyMedium!.copyWith(color: colors.inkBlack),
           ),
           const SizedBox(height: 16),
-          InkButton(
-            label: 'Ir a mi tablero',
-            onPressed: () => context.goNamed(AppRoute.home.name),
-          ),
+          if (_restored)
+            InkButton(
+              label: 'Ir a mi tablero',
+              onPressed: () => context.goNamed(AppRoute.home.name),
+            )
+          else ...[
+            InkButton(label: 'Escanear otra vez', onPressed: _rescan),
+            const SizedBox(height: 8),
+            GhostButton(label: 'Cancelar', onPressed: () => context.pop()),
+          ],
         ],
       );
     }

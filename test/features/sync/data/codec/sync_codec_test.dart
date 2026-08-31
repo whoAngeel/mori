@@ -10,9 +10,9 @@ import 'package:mori/features/sync/domain/entities/sync_payload.dart';
 
 /// Unwraps an [Ok] or fails the test.
 T _ok<T>(Result<T> r) => switch (r) {
-      Ok<T>(:final value) => value,
-      Err<T>(:final failure) => fail('expected Ok, got Err($failure)'),
-    };
+  Ok<T>(:final value) => value,
+  Err<T>(:final failure) => fail('expected Ok, got Err($failure)'),
+};
 
 List<WireBoxState> _allFree() =>
     List<WireBoxState>.filled(365, WireBoxState.free);
@@ -166,15 +166,15 @@ void main() {
 
   group('RESTORE variable length', () {
     RestorePayload restoreWithName(String name) => RestorePayload(
-          pairingId: 0x0BADC0DE,
-          senderSlot: 1,
-          senderInstallId: 0x99AABBCCDDEEFF00,
-          restoredStateVersion: 127,
-          startEpochDay: 20696,
-          snapshotEpochDay: 20690,
-          senderName: name,
-          statuses: _allFree(),
-        );
+      pairingId: 0x0BADC0DE,
+      senderSlot: 1,
+      senderInstallId: 0x99AABBCCDDEEFF00,
+      restoredStateVersion: 127,
+      startEpochDay: 20696,
+      snapshotEpochDay: 20690,
+      senderName: name,
+      statuses: _allFree(),
+    );
 
     test('1-byte name yields a 122-byte payload', () {
       // 122 bytes -> base64url ceil(122/3)*4 = 164, minus padding = 163 chars.

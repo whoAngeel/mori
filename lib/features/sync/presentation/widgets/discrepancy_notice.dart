@@ -27,11 +27,11 @@ class DiscrepancyNotice extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (reinstalled)
-          _Notice(text: '$partnerName reinstaló la app'),
+        if (reinstalled) _Notice(text: '$partnerName reinstaló la app'),
         if (mismatch)
           _Notice(
-            text: 'Tu pareja empezó su reto en otra fecha. Su avance se mide '
+            text:
+                'Tu pareja empezó su reto en otra fecha. Su avance se mide '
                 'contra su propio calendario.',
           ),
         const SizedBox(height: 16),

@@ -11,14 +11,14 @@ import '../../domain/entities/pair_invite.dart';
 abstract final class PairQrCodec {
   /// Encodes a pairing invite to the base64url QR text.
   static String encode(PairInvite invite) => codec.SyncCodec.encodePair(
-        wire.PairInvite(
-          pairingId: invite.pairingId,
-          slot: invite.slot,
-          installId: invite.installId,
-          startEpochDay: invite.startEpochDay,
-          name: invite.name,
-        ),
-      );
+    wire.PairInvite(
+      pairingId: invite.pairingId,
+      slot: invite.slot,
+      installId: invite.installId,
+      startEpochDay: invite.startEpochDay,
+      name: invite.name,
+    ),
+  );
 
   /// Decodes scanned text into a pairing invite, or null if it is not a valid
   /// PAIR payload.
@@ -26,12 +26,12 @@ abstract final class PairQrCodec {
     final result = codec.SyncCodec.decode(text);
     return switch (result) {
       Ok(value: wire.DecodedPair(:final invite)) => PairInvite(
-          pairingId: invite.pairingId,
-          slot: invite.slot,
-          installId: invite.installId,
-          startEpochDay: invite.startEpochDay,
-          name: invite.name,
-        ),
+        pairingId: invite.pairingId,
+        slot: invite.slot,
+        installId: invite.installId,
+        startEpochDay: invite.startEpochDay,
+        name: invite.name,
+      ),
       _ => null,
     };
   }

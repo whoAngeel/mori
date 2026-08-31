@@ -47,10 +47,9 @@ class _PairShowScreenState extends ConsumerState<PairShowScreen> {
       _error = null;
       _busy = true;
     });
-    final result =
-        await ref.read(pairingControllerProvider.notifier).createChallenge(
-              name.trim(),
-            );
+    final result = await ref
+        .read(pairingControllerProvider.notifier)
+        .createChallenge(name.trim());
     if (!mounted) return;
     switch (result) {
       case Ok(:final value):

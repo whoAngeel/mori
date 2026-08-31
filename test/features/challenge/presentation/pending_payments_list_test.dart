@@ -6,14 +6,16 @@ import 'package:mori/features/challenge/domain/entities/box_status.dart';
 import 'package:mori/features/challenge/presentation/widgets/pending_payments_list.dart';
 
 Future<void> _pump(WidgetTester tester, List<Box> boxes) async {
-  await tester.pumpWidget(MaterialApp(
-    theme: AppTheme.light,
-    home: Scaffold(
-      body: SingleChildScrollView(
-        child: PendingPaymentsList(boxes: boxes, onPay: (_) {}),
+  await tester.pumpWidget(
+    MaterialApp(
+      theme: AppTheme.light,
+      home: Scaffold(
+        body: SingleChildScrollView(
+          child: PendingPaymentsList(boxes: boxes, onPay: (_) {}),
+        ),
       ),
     ),
-  ));
+  );
 }
 
 void main() {

@@ -72,13 +72,15 @@ class PairingRepositoryImpl implements PairingRepository {
         startEpochDay: startEpochDay,
         createdAtMillis: _clock.now().millisecondsSinceEpoch,
       );
-      return Ok(PairInvite(
-        pairingId: pairingId,
-        slot: 0,
-        installId: installId,
-        startEpochDay: startEpochDay,
-        name: localName,
-      ));
+      return Ok(
+        PairInvite(
+          pairingId: pairingId,
+          slot: 0,
+          installId: installId,
+          startEpochDay: startEpochDay,
+          name: localName,
+        ),
+      );
     } on CacheException catch (e) {
       return Err(CacheFailure(e.message));
     }
@@ -103,13 +105,15 @@ class PairingRepositoryImpl implements PairingRepository {
         partnerName: inviterInvite.name,
         partnerInstallId: inviterInvite.installId,
       );
-      return Ok(PairInvite(
-        pairingId: inviterInvite.pairingId,
-        slot: 1,
-        installId: installId,
-        startEpochDay: inviterInvite.startEpochDay,
-        name: localName,
-      ));
+      return Ok(
+        PairInvite(
+          pairingId: inviterInvite.pairingId,
+          slot: 1,
+          installId: installId,
+          startEpochDay: inviterInvite.startEpochDay,
+          name: localName,
+        ),
+      );
     } on CacheException catch (e) {
       return Err(CacheFailure(e.message));
     }
@@ -122,13 +126,15 @@ class PairingRepositoryImpl implements PairingRepository {
       if (row == null) {
         return const Err(CacheFailure('No challenge to build an invite from'));
       }
-      return Ok(PairInvite(
-        pairingId: row.pairingId,
-        slot: row.localSlot,
-        installId: row.localInstallId,
-        startEpochDay: row.startEpochDay,
-        name: row.localName,
-      ));
+      return Ok(
+        PairInvite(
+          pairingId: row.pairingId,
+          slot: row.localSlot,
+          installId: row.localInstallId,
+          startEpochDay: row.startEpochDay,
+          name: row.localName,
+        ),
+      );
     } on CacheException catch (e) {
       return Err(CacheFailure(e.message));
     }

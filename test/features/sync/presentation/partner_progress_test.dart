@@ -4,23 +4,23 @@ import 'package:mori/features/sync/domain/entities/partner_snapshot.dart';
 import 'package:mori/features/sync/presentation/partner_progress.dart';
 
 List<PartnerBox> _boxes({int assigned = 0, int paid = 0}) => [
-      for (var day = 1; day <= 365; day++)
-        PartnerBox(
-          day: day,
-          status: day <= paid
-              ? WireBoxState.paid
-              : day <= assigned
-                  ? WireBoxState.assigned
-                  : WireBoxState.free,
-        ),
-    ];
+  for (var day = 1; day <= 365; day++)
+    PartnerBox(
+      day: day,
+      status: day <= paid
+          ? WireBoxState.paid
+          : day <= assigned
+          ? WireBoxState.assigned
+          : WireBoxState.free,
+    ),
+];
 
 PartnerSnapshot _snapshot({required int startEpochDay}) => PartnerSnapshot(
-      stateVersion: 1,
-      installId: 1,
-      startEpochDay: startEpochDay,
-      receivedAtMillis: 0,
-    );
+  stateVersion: 1,
+  installId: 1,
+  startEpochDay: startEpochDay,
+  receivedAtMillis: 0,
+);
 
 void main() {
   group('PartnerProgress (task 7.2)', () {

@@ -15,12 +15,7 @@ part 'app_database.g.dart';
 /// Register a feature's table here, run `build_runner`, then use it through a
 /// DAO or directly from a datasource.
 @DriftDatabase(
-  tables: [
-    ChallengeConfigRows,
-    OwnBoxes,
-    PartnerBoxes,
-    PartnerSnapshots,
-  ],
+  tables: [ChallengeConfigRows, OwnBoxes, PartnerBoxes, PartnerSnapshots],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
@@ -34,17 +29,18 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (m) => m.createAll(),
-        onUpgrade: (m, from, to) async {
-          if (from < 2) {
-            // No prior users: the 1 -> 2 step may be destructive. Drop the
-            // template table if it survived, then create the product schema.
-            await m.database
-                .customStatement('DROP TABLE IF EXISTS counter_entries');
-            await m.createAll();
-          }
-        },
-      );
+    onCreate: (m) => m.createAll(),
+    onUpgrade: (m, from, to) async {
+      if (from < 2) {
+        // No prior users: the 1 -> 2 step may be destructive. Drop the
+        // template table if it survived, then create the product schema.
+        await m.database.customStatement(
+          'DROP TABLE IF EXISTS counter_entries',
+        );
+        await m.createAll();
+      }
+    },
+  );
 
   /// `drift_flutter` picks the right implementation per platform and stores the
   /// file under the app's documents directory.

@@ -75,69 +75,80 @@ GoRouter goRouter(Ref ref) {
       final paired = pairing.value?.isPaired ?? false;
       final path = state.uri.path;
 
-      final inPairingFlow = path.startsWith('/onboarding') ||
-          path.startsWith('/pair') ||
-          path.startsWith('/restore');
+      // The whole onboarding flow (pairing + restore-scan) is nested under
+      // /onboarding, so a single prefix check covers it.
+      final inOnboarding = path.startsWith('/onboarding');
 
-      if (!paired && !inPairingFlow) return '/onboarding';
+      if (!paired && !inOnboarding) return '/onboarding';
       if (paired && path == '/onboarding') return '/';
       return null;
     },
     routes: [
+      // Onboarding subtree. The pairing/restore screens are children so that
+      // pushing them keeps onboarding underneath, and the back gesture pops to
+      // it instead of exiting the app.
       GoRoute(
         path: '/onboarding',
         name: AppRoute.onboarding.name,
         builder: (context, state) => const OnboardingScreen(),
+        routes: [
+          GoRoute(
+            path: 'pair/show',
+            name: AppRoute.pairShow.name,
+            builder: (context, state) => const PairShowScreen(),
+          ),
+          GoRoute(
+            path: 'pair/scan',
+            name: AppRoute.pairScan.name,
+            builder: (context, state) => const PairScanScreen(),
+          ),
+          GoRoute(
+            path: 'restore/scan',
+            name: AppRoute.restoreScan.name,
+            builder: (context, state) => const RestoreScanScreen(),
+          ),
+        ],
       ),
-      GoRoute(
-        path: '/pair/show',
-        name: AppRoute.pairShow.name,
-        builder: (context, state) => const PairShowScreen(),
-      ),
-      GoRoute(
-        path: '/pair/scan',
-        name: AppRoute.pairScan.name,
-        builder: (context, state) => const PairScanScreen(),
-      ),
-      GoRoute(
-        path: '/restore/scan',
-        name: AppRoute.restoreScan.name,
-        builder: (context, state) => const RestoreScanScreen(),
-      ),
-      GoRoute(
-        path: '/restore/show',
-        name: AppRoute.restoreShow.name,
-        builder: (context, state) => const RestoreShowScreen(),
-      ),
+      // Home subtree. Everything reachable from home is a child route, so each
+      // push has home underneath and the back gesture returns to it.
       GoRoute(
         path: '/',
         name: AppRoute.home.name,
         builder: (context, state) => const HomeScreen(),
-      ),
-      GoRoute(
-        path: '/board',
-        name: AppRoute.board.name,
-        builder: (context, state) => const BoardScreen(),
-      ),
-      GoRoute(
-        path: '/sync',
-        name: AppRoute.sync.name,
-        builder: (context, state) => const SyncHubScreen(),
-      ),
-      GoRoute(
-        path: '/sync/show',
-        name: AppRoute.syncShow.name,
-        builder: (context, state) => const SyncShowScreen(),
-      ),
-      GoRoute(
-        path: '/sync/scan',
-        name: AppRoute.syncScan.name,
-        builder: (context, state) => const SyncScanScreen(),
-      ),
-      GoRoute(
-        path: '/partner',
-        name: AppRoute.partner.name,
-        builder: (context, state) => const PartnerBoardScreen(),
+        routes: [
+          GoRoute(
+            path: 'board',
+            name: AppRoute.board.name,
+            builder: (context, state) => const BoardScreen(),
+          ),
+          GoRoute(
+            path: 'partner',
+            name: AppRoute.partner.name,
+            builder: (context, state) => const PartnerBoardScreen(),
+          ),
+          GoRoute(
+            path: 'restore/show',
+            name: AppRoute.restoreShow.name,
+            builder: (context, state) => const RestoreShowScreen(),
+          ),
+          GoRoute(
+            path: 'sync',
+            name: AppRoute.sync.name,
+            builder: (context, state) => const SyncHubScreen(),
+            routes: [
+              GoRoute(
+                path: 'show',
+                name: AppRoute.syncShow.name,
+                builder: (context, state) => const SyncShowScreen(),
+              ),
+              GoRoute(
+                path: 'scan',
+                name: AppRoute.syncScan.name,
+                builder: (context, state) => const SyncScanScreen(),
+              ),
+            ],
+          ),
+        ],
       ),
     ],
   );

@@ -30,11 +30,7 @@ class RuleOf365 extends StatelessWidget {
       height: height,
       width: double.infinity,
       child: CustomPaint(
-        painter: _RulePainter(
-          doneDays: doneDays,
-          ink: ink,
-          rule: colors.rule,
-        ),
+        painter: _RulePainter(doneDays: doneDays, ink: ink, rule: colors.rule),
       ),
     );
   }

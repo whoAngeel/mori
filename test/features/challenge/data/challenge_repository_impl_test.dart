@@ -14,9 +14,9 @@ import 'package:mori/features/pairing/data/datasources/pairing_local_data_source
 import '../../../helpers/fake_clock.dart';
 
 Failure _err<T>(Result<T> r) => switch (r) {
-      Err<T>(:final failure) => failure,
-      Ok<T>() => fail('expected Err, got Ok'),
-    };
+  Err<T>(:final failure) => failure,
+  Ok<T>() => fail('expected Err, got Ok'),
+};
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -37,8 +37,7 @@ void main() {
       createdAtMillis: 0,
     );
     // Far in the future so pending draws never run out during the test.
-    clock = FakeClock(DateTime(1970)
-        .add(Duration(days: startEpochDay + 1000)));
+    clock = FakeClock(DateTime(1970).add(Duration(days: startEpochDay + 1000)));
     final ds = ChallengeLocalDataSource(
       db,
       Random(7),
@@ -50,8 +49,7 @@ void main() {
   tearDown(() => db.close());
 
   group('draw guards (task 5.5)', () {
-    test('365 draws consume exactly the 365 boxes without repeating',
-        () async {
+    test('365 draws consume exactly the 365 boxes without repeating', () async {
       final drawnDays = <int>{};
       for (var i = 0; i < 365; i++) {
         final result = await repo.drawNextBox();
@@ -59,8 +57,11 @@ void main() {
           Ok(:final value) => value,
           Err(:final failure) => fail('draw ${i + 1} failed: $failure'),
         };
-        expect(drawnDays.add(box.day), isTrue,
-            reason: 'day ${box.day} drawn twice');
+        expect(
+          drawnDays.add(box.day),
+          isTrue,
+          reason: 'day ${box.day} drawn twice',
+        );
       }
       expect(drawnDays.length, 365);
       expect(drawnDays, {for (var d = 1; d <= 365; d++) d});
@@ -75,8 +76,7 @@ void main() {
 
     test('with no pending draws, fails with NoDrawsPending', () async {
       // First day only: exactly one pending draw.
-      clock.setNow(
-          DateTime(1970).add(const Duration(days: startEpochDay)));
+      clock.setNow(DateTime(1970).add(const Duration(days: startEpochDay)));
       final first = await repo.drawNextBox();
       expect(first, isA<Ok<Box>>());
       // Second draw the same day: pending is now 0.
@@ -95,8 +95,11 @@ void main() {
       final boxes = await repo.watchBoxes().first;
       for (final b in boxes) {
         if (assignedDays.contains(b.day)) {
-          expect(b.status, isNot(BoxStatus.free),
-              reason: 'day ${b.day} reverted to free');
+          expect(
+            b.status,
+            isNot(BoxStatus.free),
+            reason: 'day ${b.day} reverted to free',
+          );
         }
       }
     });
@@ -110,13 +113,14 @@ void main() {
       };
       expect(await repo.markPaid(box.day), isA<Ok<void>>());
       var boxes = await repo.watchBoxes().first;
-      expect(boxes.firstWhere((b) => b.day == box.day).status,
-          BoxStatus.paid);
+      expect(boxes.firstWhere((b) => b.day == box.day).status, BoxStatus.paid);
 
       expect(await repo.unmarkPaid(box.day), isA<Ok<void>>());
       boxes = await repo.watchBoxes().first;
-      expect(boxes.firstWhere((b) => b.day == box.day).status,
-          BoxStatus.assigned);
+      expect(
+        boxes.firstWhere((b) => b.day == box.day).status,
+        BoxStatus.assigned,
+      );
     });
   });
 }

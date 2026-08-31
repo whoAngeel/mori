@@ -20,21 +20,21 @@ class ChallengeRepositoryImpl implements ChallengeRepository {
   final Clock _clock;
 
   static BoxStatus _statusOf(int raw) => switch (raw) {
-        2 => BoxStatus.paid,
-        1 => BoxStatus.assigned,
-        _ => BoxStatus.free,
-      };
+    2 => BoxStatus.paid,
+    1 => BoxStatus.assigned,
+    _ => BoxStatus.free,
+  };
 
   static Box _toBox(OwnBoxRow row) => Box(
-        day: row.day,
-        status: _statusOf(row.status),
-        drawnAt: row.drawnAtMillis == null
-            ? null
-            : DateTime.fromMillisecondsSinceEpoch(row.drawnAtMillis!),
-        paidAt: row.paidAtMillis == null
-            ? null
-            : DateTime.fromMillisecondsSinceEpoch(row.paidAtMillis!),
-      );
+    day: row.day,
+    status: _statusOf(row.status),
+    drawnAt: row.drawnAtMillis == null
+        ? null
+        : DateTime.fromMillisecondsSinceEpoch(row.drawnAtMillis!),
+    paidAt: row.paidAtMillis == null
+        ? null
+        : DateTime.fromMillisecondsSinceEpoch(row.paidAtMillis!),
+  );
 
   @override
   Stream<List<Box>> watchBoxes() =>
@@ -46,9 +46,9 @@ class ChallengeRepositoryImpl implements ChallengeRepository {
       // Guard: need a free box and a pending draw. Compute pending from the
       // current board and the challenge start date.
       final rows = await _db.select(_db.ownBoxes).get();
-      final config = await (_db.select(_db.challengeConfigRows)
-            ..where((t) => t.id.equals(1)))
-          .getSingleOrNull();
+      final config = await (_db.select(
+        _db.challengeConfigRows,
+      )..where((t) => t.id.equals(1))).getSingleOrNull();
       if (config == null) {
         return const Err(CacheFailure('No challenge configured'));
       }
@@ -70,11 +70,9 @@ class ChallengeRepositoryImpl implements ChallengeRepository {
       final day = await _local.drawBox();
       if (day == null) return const Err(NoBoxesLeft());
 
-      return Ok(Box(
-        day: day,
-        status: BoxStatus.assigned,
-        drawnAt: _clock.now(),
-      ));
+      return Ok(
+        Box(day: day, status: BoxStatus.assigned, drawnAt: _clock.now()),
+      );
     } on CacheException catch (e) {
       return Err(CacheFailure(e.message));
     }

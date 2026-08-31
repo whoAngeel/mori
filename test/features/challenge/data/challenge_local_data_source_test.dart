@@ -41,9 +41,9 @@ void main() {
       expect(day, isNotNull);
       expect(await stateVersion(), 1);
 
-      final row = await (db.select(db.ownBoxes)
-            ..where((t) => t.day.equals(day!)))
-          .getSingle();
+      final row = await (db.select(
+        db.ownBoxes,
+      )..where((t) => t.day.equals(day!))).getSingle();
       expect(row.status, 1); // assigned
       expect(row.drawnAtMillis, fakeMillis);
     });
@@ -61,24 +61,26 @@ void main() {
       final day = (await ds.drawBox())!;
       fakeMillis = 5000;
       await ds.markPaid(day);
-      final row = await (db.select(db.ownBoxes)
-            ..where((t) => t.day.equals(day)))
-          .getSingle();
+      final row = await (db.select(
+        db.ownBoxes,
+      )..where((t) => t.day.equals(day))).getSingle();
       expect(row.status, 2);
       expect(row.paidAtMillis, 5000);
     });
 
-    test('unmarkPaid reverts to assigned and clears paidAtMillis (I3)',
-        () async {
-      final day = (await ds.drawBox())!;
-      await ds.markPaid(day);
-      await ds.unmarkPaid(day);
-      final row = await (db.select(db.ownBoxes)
-            ..where((t) => t.day.equals(day)))
-          .getSingle();
-      expect(row.status, 1); // assigned
-      expect(row.paidAtMillis, isNull);
-    });
+    test(
+      'unmarkPaid reverts to assigned and clears paidAtMillis (I3)',
+      () async {
+        final day = (await ds.drawBox())!;
+        await ds.markPaid(day);
+        await ds.unmarkPaid(day);
+        final row = await (db.select(
+          db.ownBoxes,
+        )..where((t) => t.day.equals(day))).getSingle();
+        expect(row.status, 1); // assigned
+        expect(row.paidAtMillis, isNull);
+      },
+    );
 
     test('drawBox returns null when no free boxes remain', () async {
       // Draw all 365.

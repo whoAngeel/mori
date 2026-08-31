@@ -20,9 +20,9 @@ class PairingLocalDataSource {
   /// Reads the single config row, or null if no challenge exists.
   Future<ChallengeConfigRow?> readConfig() async {
     try {
-      return await (_db.select(_db.challengeConfigRows)
-            ..where((t) => t.id.equals(1)))
-          .getSingleOrNull();
+      return await (_db.select(
+        _db.challengeConfigRows,
+      )..where((t) => t.id.equals(1))).getSingleOrNull();
     } catch (e) {
       throw CacheException('readConfig failed: $e');
     }
@@ -30,8 +30,9 @@ class PairingLocalDataSource {
 
   /// Streams the single config row (or null).
   Stream<ChallengeConfigRow?> watchConfig() {
-    return (_db.select(_db.challengeConfigRows)..where((t) => t.id.equals(1)))
-        .watchSingleOrNull();
+    return (_db.select(
+      _db.challengeConfigRows,
+    )..where((t) => t.id.equals(1))).watchSingleOrNull();
   }
 
   /// Seeds a brand-new challenge: writes the config row with
@@ -48,7 +49,9 @@ class PairingLocalDataSource {
   }) async {
     try {
       await _db.transaction(() async {
-        await _db.into(_db.challengeConfigRows).insert(
+        await _db
+            .into(_db.challengeConfigRows)
+            .insert(
               ChallengeConfigRowsCompanion.insert(
                 id: const Value(1),
                 pairingId: pairingId,
@@ -63,13 +66,10 @@ class PairingLocalDataSource {
               ),
             );
         await _db.batch((b) {
-          b.insertAll(
-            _db.ownBoxes,
-            [
-              for (var day = 1; day <= _boxCount; day++)
-                OwnBoxesCompanion.insert(day: Value(day)),
-            ],
-          );
+          b.insertAll(_db.ownBoxes, [
+            for (var day = 1; day <= _boxCount; day++)
+              OwnBoxesCompanion.insert(day: Value(day)),
+          ]);
         });
       });
     } catch (e) {
@@ -83,8 +83,9 @@ class PairingLocalDataSource {
     required int partnerInstallId,
   }) async {
     try {
-      await (_db.update(_db.challengeConfigRows)..where((t) => t.id.equals(1)))
-          .write(
+      await (_db.update(
+        _db.challengeConfigRows,
+      )..where((t) => t.id.equals(1))).write(
         ChallengeConfigRowsCompanion(
           partnerName: Value(partnerName),
           partnerInstallId: Value(partnerInstallId),
@@ -98,13 +99,16 @@ class PairingLocalDataSource {
   /// Updates either or both display names.
   Future<void> rename({String? localName, String? partnerName}) async {
     try {
-      await (_db.update(_db.challengeConfigRows)..where((t) => t.id.equals(1)))
-          .write(
+      await (_db.update(
+        _db.challengeConfigRows,
+      )..where((t) => t.id.equals(1))).write(
         ChallengeConfigRowsCompanion(
-          localName:
-              localName == null ? const Value.absent() : Value(localName),
-          partnerName:
-              partnerName == null ? const Value.absent() : Value(partnerName),
+          localName: localName == null
+              ? const Value.absent()
+              : Value(localName),
+          partnerName: partnerName == null
+              ? const Value.absent()
+              : Value(partnerName),
         ),
       );
     } catch (e) {

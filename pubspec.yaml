@@ -48,6 +48,7 @@ dependencies:
   # QR sync (offline, camera-based)
   mobile_scanner: ^7.4.0   # escanear QR (requiere Flutter >= 3.29)
   qr_flutter: ^4.1.0       # dibujar QR
+  screen_brightness: ^2.1.11  # brillo al máximo al mostrar un QR (sin red)
 
 dev_dependencies:
   flutter_test:

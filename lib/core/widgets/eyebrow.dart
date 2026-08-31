@@ -21,10 +21,9 @@ class Eyebrow extends StatelessWidget {
     final ink = Theme.of(context).extension<InkColors>()!;
     return Text(
       text.toUpperCase(),
-      style: Theme.of(context)
-          .textTheme
-          .labelSmall!
-          .copyWith(color: color ?? ink.inkBlack),
+      style: Theme.of(
+        context,
+      ).textTheme.labelSmall!.copyWith(color: color ?? ink.inkBlack),
     );
   }
 }

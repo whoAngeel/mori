@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../../../core/error/failures.dart';
@@ -31,6 +32,7 @@ class _SyncScanScreenState extends ConsumerState<SyncScanScreen> {
   bool _scanning = false;
   bool _handled = false;
   String? _message;
+  bool _messageIsTerminal = false;
 
   @override
   void dispose() {
@@ -41,8 +43,23 @@ class _SyncScanScreenState extends ConsumerState<SyncScanScreen> {
   void _start() {
     setState(() {
       _message = null;
+      _messageIsTerminal = false;
       _handled = false;
       _scanning = true;
+      _scanner = MobileScannerController(
+        formats: const [BarcodeFormat.qrCode],
+        detectionSpeed: DetectionSpeed.noDuplicates,
+      );
+    });
+  }
+
+  /// Discards the current controller and arms a fresh scan after a failure.
+  Future<void> _rescan() async {
+    await _scanner?.dispose();
+    if (!mounted) return;
+    setState(() {
+      _message = null;
+      _handled = false;
       _scanner = MobileScannerController(
         formats: const [BarcodeFormat.qrCode],
         detectionSpeed: DetectionSpeed.noDuplicates,
@@ -62,17 +79,25 @@ class _SyncScanScreenState extends ConsumerState<SyncScanScreen> {
       _ => 'tu pareja',
     };
 
-    final result =
-        await ref.read(syncControllerProvider.notifier).applySync(raw);
+    final result = await ref
+        .read(syncControllerProvider.notifier)
+        .applySync(raw);
     if (!mounted) return;
     final message = switch (result) {
-      Ok(:final value) =>
-        SyncMessages.forOutcome(value, partnerName: partnerName),
-      Err(:final failure) => failure is SyncFailure
-          ? SyncMessages.forFailure(failure)
-          : failure.message,
+      Ok(:final value) => SyncMessages.forOutcome(
+        value,
+        partnerName: partnerName,
+      ),
+      Err(:final failure) =>
+        failure is SyncFailure
+            ? SyncMessages.forFailure(failure)
+            : failure.message,
     };
-    setState(() => _message = message);
+    setState(() {
+      _message = message;
+      // Ok outcomes are done; a failure can be retried with another code.
+      _messageIsTerminal = result is Ok;
+    });
   }
 
   @override
@@ -133,10 +158,11 @@ class _SyncScanScreenState extends ConsumerState<SyncScanScreen> {
             style: theme.textTheme.bodyMedium!.copyWith(color: colors.inkBlack),
           ),
           const SizedBox(height: 12),
-          GhostButton(
-            label: 'Listo',
-            onPressed: () => Navigator.of(context).pop(),
-          ),
+          if (!_messageIsTerminal) ...[
+            InkButton(label: 'Escanear otra vez', onPressed: _rescan),
+            const SizedBox(height: 8),
+          ],
+          GhostButton(label: 'Listo', onPressed: () => context.pop()),
         ],
         const SizedBox(height: 16),
       ],

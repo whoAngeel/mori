@@ -87,8 +87,9 @@ class _InkButtonState extends State<InkButton> {
                         children: [
                           Text(
                             widget.label.toUpperCase(),
-                            style: theme.textTheme.labelLarge!
-                                .copyWith(color: colors.paper),
+                            style: theme.textTheme.labelLarge!.copyWith(
+                              color: colors.paper,
+                            ),
                           ),
                           if (widget.subtitle != null) ...[
                             const SizedBox(height: 4),

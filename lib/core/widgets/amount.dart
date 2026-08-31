@@ -7,12 +7,7 @@ import '../theme/ink_colors.dart';
 /// §7).
 class Amount extends StatelessWidget {
   /// Creates an amount widget for [mxn].
-  const Amount(
-    this.mxn, {
-    super.key,
-    this.style,
-    this.color,
-  });
+  const Amount(this.mxn, {super.key, this.style, this.color});
 
   /// The value in whole MXN.
   final int mxn;

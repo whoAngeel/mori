@@ -13,16 +13,13 @@ List<Box> board({int drawn = 0, int paid = 0}) {
         status: day <= paid
             ? BoxStatus.paid
             : day <= drawn
-                ? BoxStatus.assigned
-                : BoxStatus.free,
+            ? BoxStatus.assigned
+            : BoxStatus.free,
       ),
   ];
 }
 
-ChallengeProgress progress({
-  required List<Box> boxes,
-  required int elapsed,
-}) {
+ChallengeProgress progress({required List<Box> boxes, required int elapsed}) {
   const start = 20000;
   return ChallengeProgress.from(
     boxes: boxes,

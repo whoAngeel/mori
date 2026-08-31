@@ -13,9 +13,9 @@ import 'package:mori/features/pairing/domain/repositories/pairing_repository.dar
 import '../../../helpers/fake_clock.dart';
 
 T _ok<T>(Result<T> r) => switch (r) {
-      Ok<T>(:final value) => value,
-      Err<T>(:final failure) => fail('expected Ok, got Err($failure)'),
-    };
+  Ok<T>(:final value) => value,
+  Err<T>(:final failure) => fail('expected Ok, got Err($failure)'),
+};
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -43,8 +43,9 @@ void main() {
       final boxes = await db.select(db.ownBoxes).get();
       expect(boxes.length, 365);
       expect(boxes.every((b) => b.status == 0), isTrue);
-      expect(boxes.map((b) => b.day).toSet(),
-          {for (var d = 1; d <= 365; d++) d});
+      expect(boxes.map((b) => b.day).toSet(), {
+        for (var d = 1; d <= 365; d++) d,
+      });
 
       final config = await db.select(db.challengeConfigRows).getSingle();
       expect(config.stateVersion, 0);
@@ -62,12 +63,12 @@ void main() {
 
   group('applyPairInvite branches (task 4.3)', () {
     PairInvite foreignInvite(int pairingId) => PairInvite(
-          pairingId: pairingId,
-          slot: 0,
-          installId: 0xABCDEF,
-          startEpochDay: clock.todayEpochDay(),
-          name: 'Partner',
-        );
+      pairingId: pairingId,
+      slot: 0,
+      installId: 0xABCDEF,
+      startEpochDay: clock.todayEpochDay(),
+      name: 'Partner',
+    );
 
     test('branch 1: no local pairing -> adopts and seeds the board', () async {
       final outcome = _ok(await repo.applyPairInvite(foreignInvite(0x1111)));
@@ -81,44 +82,49 @@ void main() {
       expect(config.partnerInstallId, 0xABCDEF);
     });
 
-    test('branch 2: same pairingId -> links partner, boxes untouched',
-        () async {
-      final mine = _ok(await repo.createChallenge(localName: 'Yo'));
-      // Capture the board before applying.
-      final before = await db.select(db.ownBoxes).get();
+    test(
+      'branch 2: same pairingId -> links partner, boxes untouched',
+      () async {
+        final mine = _ok(await repo.createChallenge(localName: 'Yo'));
+        // Capture the board before applying.
+        final before = await db.select(db.ownBoxes).get();
 
-      final partner = PairInvite(
-        pairingId: mine.pairingId,
-        slot: 1,
-        installId: 0x999,
-        startEpochDay: mine.startEpochDay,
-        name: 'Pareja',
-      );
-      final outcome = _ok(await repo.applyPairInvite(partner));
-      expect(outcome, ApplyPairOutcome.partnerLinked);
+        final partner = PairInvite(
+          pairingId: mine.pairingId,
+          slot: 1,
+          installId: 0x999,
+          startEpochDay: mine.startEpochDay,
+          name: 'Pareja',
+        );
+        final outcome = _ok(await repo.applyPairInvite(partner));
+        expect(outcome, ApplyPairOutcome.partnerLinked);
 
-      final config = await db.select(db.challengeConfigRows).getSingle();
-      expect(config.partnerName, 'Pareja');
-      expect(config.partnerInstallId, 0x999);
+        final config = await db.select(db.challengeConfigRows).getSingle();
+        expect(config.partnerName, 'Pareja');
+        expect(config.partnerInstallId, 0x999);
 
-      final after = await db.select(db.ownBoxes).get();
-      expect(after.length, before.length);
-      expect(after.every((b) => b.status == 0), isTrue);
-    });
+        final after = await db.select(db.ownBoxes).get();
+        expect(after.length, before.length);
+        expect(after.every((b) => b.status == 0), isTrue);
+      },
+    );
 
-    test('branch 3: different pairingId -> rejected, nothing written',
-        () async {
-      final mine = _ok(await repo.createChallenge(localName: 'Yo'));
+    test(
+      'branch 3: different pairingId -> rejected, nothing written',
+      () async {
+        final mine = _ok(await repo.createChallenge(localName: 'Yo'));
 
-      final outcome =
-          _ok(await repo.applyPairInvite(foreignInvite(mine.pairingId ^ 0x1)));
-      expect(outcome, ApplyPairOutcome.rejectedForeign);
+        final outcome = _ok(
+          await repo.applyPairInvite(foreignInvite(mine.pairingId ^ 0x1)),
+        );
+        expect(outcome, ApplyPairOutcome.rejectedForeign);
 
-      final config = await db.select(db.challengeConfigRows).getSingle();
-      // Partner still unset: the foreign invite left no trace.
-      expect(config.partnerInstallId, isNull);
-      expect(config.partnerName, isNull);
-    });
+        final config = await db.select(db.challengeConfigRows).getSingle();
+        // Partner still unset: the foreign invite left no trace.
+        expect(config.partnerInstallId, isNull);
+        expect(config.partnerName, isNull);
+      },
+    );
   });
 
   group('watchPairingState', () {
@@ -127,9 +133,9 @@ void main() {
       expect(first, isA<Unpaired>());
 
       _ok(await repo.createChallenge(localName: 'Yo'));
-      final next = await repo
-          .watchPairingState()
-          .firstWhere((s) => s is Paired);
+      final next = await repo.watchPairingState().firstWhere(
+        (s) => s is Paired,
+      );
       expect((next as Paired).localName, 'Yo');
     });
   });

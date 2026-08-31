@@ -32,17 +32,13 @@ void main() {
   // ratio annotated in docs/design-system.md §2, checked with a small margin.
   const tolerance = 0.15;
 
-  void expectContrast(
-    String label,
-    Color fg,
-    Color bg,
-    double annotated,
-  ) {
+  void expectContrast(String label, Color fg, Color bg, double annotated) {
     final ratio = _contrast(fg, bg);
     expect(
       ratio,
       greaterThanOrEqualTo(annotated - tolerance),
-      reason: '$label: got ${ratio.toStringAsFixed(2)}:1, '
+      reason:
+          '$label: got ${ratio.toStringAsFixed(2)}:1, '
           'expected >= ${annotated.toStringAsFixed(2)}:1',
     );
   }

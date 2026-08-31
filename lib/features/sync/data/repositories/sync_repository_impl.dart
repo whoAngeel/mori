@@ -23,10 +23,10 @@ class SyncRepositoryImpl implements SyncRepository {
   final Random _random;
 
   static WireBoxState _toWire(int status) => switch (status) {
-        2 => WireBoxState.paid,
-        1 => WireBoxState.assigned,
-        _ => WireBoxState.free,
-      };
+    2 => WireBoxState.paid,
+    1 => WireBoxState.assigned,
+    _ => WireBoxState.free,
+  };
 
   int _newInstallId() =>
       (_random.nextInt(1 << 32) << 32) | _random.nextInt(1 << 32);
@@ -40,14 +40,16 @@ class SyncRepositoryImpl implements SyncRepository {
       }
       final boxes = await _local.readOwnBoxes();
       final statuses = boxes.map((b) => _toWire(b.status)).toList();
-      final text = SyncCodec.encodeSync(SyncSnapshot(
-        pairingId: config.pairingId,
-        slot: config.localSlot,
-        installId: config.localInstallId,
-        stateVersion: config.stateVersion,
-        startEpochDay: config.startEpochDay,
-        statuses: statuses,
-      ));
+      final text = SyncCodec.encodeSync(
+        SyncSnapshot(
+          pairingId: config.pairingId,
+          slot: config.localSlot,
+          installId: config.localInstallId,
+          stateVersion: config.stateVersion,
+          startEpochDay: config.startEpochDay,
+          statuses: statuses,
+        ),
+      );
       return Ok(text);
     } on CacheException catch (e) {
       return Err(CacheFailure(e.message));
@@ -85,8 +87,9 @@ class SyncRepositoryImpl implements SyncRepository {
 
       // Check 10 / acceptance rule (§8).
       final stored = await _local.readPartnerSnapshot();
-      final incomingNonFree =
-          snapshot.statuses.where((s) => s != WireBoxState.free).length;
+      final incomingNonFree = snapshot.statuses
+          .where((s) => s != WireBoxState.free)
+          .length;
 
       if (stored == null) {
         // First sync ever: accept.
@@ -98,9 +101,9 @@ class SyncRepositoryImpl implements SyncRepository {
         // Reinstall: accept and reset the baseline (§8.1).
         final storedNonFree = await _storedNonFreeCount();
         await _apply(snapshot);
-        return Ok(SyncPartnerReset(
-          lostProgress: incomingNonFree < storedNonFree,
-        ));
+        return Ok(
+          SyncPartnerReset(lostProgress: incomingNonFree < storedNonFree),
+        );
       }
 
       if (snapshot.stateVersion > stored.stateVersion) {
@@ -123,12 +126,12 @@ class SyncRepositoryImpl implements SyncRepository {
   }
 
   Future<void> _apply(SyncSnapshot snapshot) => _local.applySnapshot(
-        statuses: snapshot.statuses,
-        stateVersion: snapshot.stateVersion,
-        installId: snapshot.installId,
-        startEpochDay: snapshot.startEpochDay,
-        receivedAtMillis: _clock.now().millisecondsSinceEpoch,
-      );
+    statuses: snapshot.statuses,
+    stateVersion: snapshot.stateVersion,
+    installId: snapshot.installId,
+    startEpochDay: snapshot.startEpochDay,
+    receivedAtMillis: _clock.now().millisecondsSinceEpoch,
+  );
 
   @override
   Future<Result<String>> buildRestorePayload() async {
@@ -144,23 +147,29 @@ class SyncRepositoryImpl implements SyncRepository {
       final partnerBoxes = await _local.readPartnerBoxes();
       final statuses = partnerBoxes.map((b) => _toWire(b.status)).toList();
 
-      final text = SyncCodec.encodeRestore(RestorePayload(
-        pairingId: config.pairingId,
-        senderSlot: config.localSlot,
-        senderInstallId: config.localInstallId,
-        restoredStateVersion: snapshot.stateVersion,
-        startEpochDay: snapshot.startEpochDay,
-        snapshotEpochDay: _toEpochDayFromMillis(snapshot.receivedAtMillis),
-        senderName: config.localName,
-        statuses: statuses,
-      ));
+      final text = SyncCodec.encodeRestore(
+        RestorePayload(
+          pairingId: config.pairingId,
+          senderSlot: config.localSlot,
+          senderInstallId: config.localInstallId,
+          restoredStateVersion: snapshot.stateVersion,
+          startEpochDay: snapshot.startEpochDay,
+          snapshotEpochDay: _toEpochDayFromMillis(snapshot.receivedAtMillis),
+          senderName: config.localName,
+          statuses: statuses,
+        ),
+      );
       return Ok(text);
     } on CacheException catch (e) {
       return Err(CacheFailure(e.message));
     }
   }
 
-  static int _toEpochDayFromMillis(int millis) => millis ~/ 86400000;
+  /// Civil-date epoch-day of a stored millis timestamp. Goes through the civil
+  /// date (not a raw `~/ 86400000`) so it matches the protocol's §4.2 rule and
+  /// does not slip a day near midnight.
+  static int _toEpochDayFromMillis(int millis) =>
+      toEpochDay(DateTime.fromMillisecondsSinceEpoch(millis));
 
   @override
   Future<Result<SyncOutcome>> applyRestorePayload({
@@ -197,8 +206,8 @@ class SyncRepositoryImpl implements SyncRepository {
         statuses: restore.statuses,
       );
 
-      final daysStale =
-          (_clock.todayEpochDay() - restore.snapshotEpochDay).clamp(0, 100000);
+      final daysStale = (_clock.todayEpochDay() - restore.snapshotEpochDay)
+          .clamp(0, 100000);
       return Ok(RestoreApplied(daysStale));
     } on CacheException catch (e) {
       return Err(CacheFailure(e.message));
@@ -221,9 +230,9 @@ class SyncRepositoryImpl implements SyncRepository {
   @override
   Stream<List<PartnerBox>> watchPartnerBoxes() {
     return _local.watchPartnerBoxes().map(
-          (rows) => rows
-              .map((r) => PartnerBox(day: r.day, status: _toWire(r.status)))
-              .toList(),
-        );
+      (rows) => rows
+          .map((r) => PartnerBox(day: r.day, status: _toWire(r.status)))
+          .toList(),
+    );
   }
 }

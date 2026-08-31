@@ -47,8 +47,9 @@ void main() {
     );
   });
 
-  testWidgets('InkBox exposes a Semantics label naming state and amount',
-      (tester) async {
+  testWidgets('InkBox exposes a Semantics label naming state and amount', (
+    tester,
+  ) async {
     await tester.pumpWidget(_harness(theme: AppTheme.light));
     expect(find.bySemanticsLabel('Día 45, \$45, libre'), findsOneWidget);
     expect(find.bySemanticsLabel('Día 45, \$45, sorteada'), findsOneWidget);

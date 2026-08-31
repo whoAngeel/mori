@@ -34,10 +34,10 @@ ChallengeLocalDataSource challengeLocalDataSource(Ref ref) {
 /// The challenge repository.
 @riverpod
 ChallengeRepository challengeRepository(Ref ref) => ChallengeRepositoryImpl(
-      ref.watch(challengeLocalDataSourceProvider),
-      ref.watch(appDatabaseProvider),
-      ref.watch(clockProvider),
-    );
+  ref.watch(challengeLocalDataSourceProvider),
+  ref.watch(appDatabaseProvider),
+  ref.watch(clockProvider),
+);
 
 /// The immutable state the home and board screens render.
 final class ChallengeState {
@@ -65,15 +65,15 @@ class ChallengeNotifier extends _$ChallengeNotifier {
     };
 
     yield* repo.watchBoxes().map(
-          (boxes) => ChallengeState(
-            boxes: boxes,
-            progress: ChallengeProgress.from(
-              boxes: boxes,
-              todayEpochDay: clock.todayEpochDay(),
-              startEpochDay: startEpochDay,
-            ),
-          ),
-        );
+      (boxes) => ChallengeState(
+        boxes: boxes,
+        progress: ChallengeProgress.from(
+          boxes: boxes,
+          todayEpochDay: clock.todayEpochDay(),
+          startEpochDay: startEpochDay,
+        ),
+      ),
+    );
   }
 
   ChallengeRepository get _repo => ref.read(challengeRepositoryProvider);

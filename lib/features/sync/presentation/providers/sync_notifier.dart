@@ -28,10 +28,10 @@ SyncLocalDataSource syncLocalDataSource(Ref ref) =>
 /// The sync repository, wired with the clock and RNG.
 @riverpod
 SyncRepository syncRepository(Ref ref) => SyncRepositoryImpl(
-      ref.watch(syncLocalDataSourceProvider),
-      ref.watch(clockProvider),
-      ref.watch(randomProvider),
-    );
+  ref.watch(syncLocalDataSourceProvider),
+  ref.watch(clockProvider),
+  ref.watch(randomProvider),
+);
 
 /// Streams the partner's last snapshot description (or null).
 @riverpod
@@ -59,10 +59,9 @@ class SyncController extends _$SyncController {
   Future<Result<SyncOutcome>> applyRestore({
     required String text,
     required String localName,
-  }) =>
-      ApplyRestorePayload(_repo).call(
-        ApplyRestoreParams(scannedText: text, localName: localName),
-      );
+  }) => ApplyRestorePayload(
+    _repo,
+  ).call(ApplyRestoreParams(scannedText: text, localName: localName));
 
   /// Builds a RESTORE payload for the partner.
   Future<Result<String>> buildRestore() =>

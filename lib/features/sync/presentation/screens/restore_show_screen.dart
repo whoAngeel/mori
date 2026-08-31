@@ -7,6 +7,7 @@ import '../../../../core/utils/result.dart';
 import '../../../../core/widgets/eyebrow.dart';
 import '../sync_messages.dart';
 import '../providers/sync_notifier.dart';
+import '../widgets/max_brightness.dart';
 import '../widgets/qr_plate.dart';
 
 /// Emits a RESTORE QR for the partner (from Settings). Accepts only the RESTORE
@@ -31,7 +32,9 @@ class _RestoreShowScreenState extends ConsumerState<RestoreShowScreen> {
   }
 
   Future<void> _build() async {
-    final result = await ref.read(syncControllerProvider.notifier).buildRestore();
+    final result = await ref
+        .read(syncControllerProvider.notifier)
+        .buildRestore();
     if (!mounted) return;
     setState(() {
       _loading = false;
@@ -51,41 +54,45 @@ class _RestoreShowScreenState extends ConsumerState<RestoreShowScreen> {
     final colors = Theme.of(context).extension<InkColors>()!;
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Ayudar a recuperar')),
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 480),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: _loading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _error != null
-                      ? Center(
-                          child: Text(
-                            _error!,
-                            textAlign: TextAlign.center,
-                            style: theme.textTheme.bodyMedium!
-                                .copyWith(color: colors.inkBlack),
+    return MaxBrightness(
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Ayudar a recuperar')),
+        body: SafeArea(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 480),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: _loading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _error != null
+                    ? Center(
+                        child: Text(
+                          _error!,
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyMedium!.copyWith(
+                            color: colors.inkBlack,
                           ),
-                        )
-                      : Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            const Eyebrow('Devuélvele su reto'),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Que escanee este código desde "Recuperar mi '
-                              'reto".',
-                              style: theme.textTheme.bodyMedium!
-                                  .copyWith(color: colors.inkMuted),
-                            ),
-                            const SizedBox(height: 24),
-                            QrPlate(data: _payload!),
-                          ],
                         ),
+                      )
+                    : Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const Eyebrow('Devuélvele su reto'),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Que escanee este código desde "Recuperar mi '
+                            'reto".',
+                            style: theme.textTheme.bodyMedium!.copyWith(
+                              color: colors.inkMuted,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          QrPlate(data: _payload!),
+                        ],
+                      ),
+              ),
             ),
           ),
         ),

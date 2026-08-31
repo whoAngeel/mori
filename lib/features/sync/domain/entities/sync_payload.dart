@@ -53,13 +53,13 @@ final class SyncSnapshot {
 
   @override
   int get hashCode => Object.hash(
-        pairingId,
-        slot,
-        installId,
-        stateVersion,
-        startEpochDay,
-        Object.hashAll(statuses),
-      );
+    pairingId,
+    slot,
+    installId,
+    stateVersion,
+    startEpochDay,
+    Object.hashAll(statuses),
+  );
 }
 
 /// A PAIR payload (kind `0x02`): the invitation and the response share this
@@ -165,15 +165,15 @@ final class RestorePayload {
 
   @override
   int get hashCode => Object.hash(
-        pairingId,
-        senderSlot,
-        senderInstallId,
-        restoredStateVersion,
-        startEpochDay,
-        snapshotEpochDay,
-        senderName,
-        Object.hashAll(statuses),
-      );
+    pairingId,
+    senderSlot,
+    senderInstallId,
+    restoredStateVersion,
+    startEpochDay,
+    snapshotEpochDay,
+    senderName,
+    Object.hashAll(statuses),
+  );
 }
 
 /// Result of [decode]: exactly one of the three payload kinds, so consumers

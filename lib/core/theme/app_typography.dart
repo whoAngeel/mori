@@ -86,12 +86,12 @@ abstract final class AppTypography {
 
   /// Assembles a [TextTheme] from the scale, tinting every style [ink].
   static TextTheme textTheme(Color ink) => TextTheme(
-        displayLarge: displayLarge.copyWith(color: ink),
-        displaySmall: displaySmall.copyWith(color: ink),
-        headlineMedium: headlineMedium.copyWith(color: ink),
-        titleMedium: titleMedium.copyWith(color: ink),
-        bodyMedium: bodyMedium.copyWith(color: ink),
-        labelLarge: labelLarge.copyWith(color: ink),
-        labelSmall: labelSmall.copyWith(color: ink),
-      );
+    displayLarge: displayLarge.copyWith(color: ink),
+    displaySmall: displaySmall.copyWith(color: ink),
+    headlineMedium: headlineMedium.copyWith(color: ink),
+    titleMedium: titleMedium.copyWith(color: ink),
+    bodyMedium: bodyMedium.copyWith(color: ink),
+    labelLarge: labelLarge.copyWith(color: ink),
+    labelSmall: labelSmall.copyWith(color: ink),
+  );
 }

@@ -161,26 +161,34 @@ abstract final class SyncCodec {
   static Result<DecodedPayload> _decodeSyncBody(ByteData b, Uint8List bytes) {
     final statuses = _readBitmap(bytes, 22);
     if (statuses == null) return const Err(MalformedPayload());
-    return Ok(DecodedSync(SyncSnapshot(
-      pairingId: b.getUint32(3),
-      slot: b.getUint8(7),
-      installId: b.getUint64(8),
-      stateVersion: b.getUint32(16),
-      startEpochDay: b.getUint16(20),
-      statuses: statuses,
-    )));
+    return Ok(
+      DecodedSync(
+        SyncSnapshot(
+          pairingId: b.getUint32(3),
+          slot: b.getUint8(7),
+          installId: b.getUint64(8),
+          stateVersion: b.getUint32(16),
+          startEpochDay: b.getUint16(20),
+          statuses: statuses,
+        ),
+      ),
+    );
   }
 
   static Result<DecodedPayload> _decodePairBody(ByteData b, Uint8List bytes) {
     final nameLen = b.getUint8(18);
     final name = utf8.decode(bytes.sublist(19, 19 + nameLen));
-    return Ok(DecodedPair(PairInvite(
-      pairingId: b.getUint32(3),
-      slot: b.getUint8(7),
-      installId: b.getUint64(8),
-      startEpochDay: b.getUint16(16),
-      name: name,
-    )));
+    return Ok(
+      DecodedPair(
+        PairInvite(
+          pairingId: b.getUint32(3),
+          slot: b.getUint8(7),
+          installId: b.getUint64(8),
+          startEpochDay: b.getUint16(16),
+          name: name,
+        ),
+      ),
+    );
   }
 
   static Result<DecodedPayload> _decodeRestoreBody(
@@ -191,16 +199,20 @@ abstract final class SyncCodec {
     if (statuses == null) return const Err(MalformedPayload());
     final nameLen = b.getUint8(116);
     final name = utf8.decode(bytes.sublist(117, 117 + nameLen));
-    return Ok(DecodedRestore(RestorePayload(
-      pairingId: b.getUint32(3),
-      senderSlot: b.getUint8(7),
-      senderInstallId: b.getUint64(8),
-      restoredStateVersion: b.getUint32(16),
-      startEpochDay: b.getUint16(20),
-      snapshotEpochDay: b.getUint16(22),
-      senderName: name,
-      statuses: statuses,
-    )));
+    return Ok(
+      DecodedRestore(
+        RestorePayload(
+          pairingId: b.getUint32(3),
+          senderSlot: b.getUint8(7),
+          senderInstallId: b.getUint64(8),
+          restoredStateVersion: b.getUint32(16),
+          startEpochDay: b.getUint16(20),
+          snapshotEpochDay: b.getUint16(22),
+          senderName: name,
+          statuses: statuses,
+        ),
+      ),
+    );
   }
 
   // ---------------------------------------------------------------------------
@@ -241,17 +253,17 @@ abstract final class SyncCodec {
   }
 
   static int _wireValue(WireBoxState s) => switch (s) {
-        WireBoxState.free => 0x00,
-        WireBoxState.assigned => 0x01,
-        WireBoxState.paid => 0x02,
-      };
+    WireBoxState.free => 0x00,
+    WireBoxState.assigned => 0x01,
+    WireBoxState.paid => 0x02,
+  };
 
   static WireBoxState? _wireState(int value) => switch (value) {
-        0x00 => WireBoxState.free,
-        0x01 => WireBoxState.assigned,
-        0x02 => WireBoxState.paid,
-        _ => null, // 0b11
-      };
+    0x00 => WireBoxState.free,
+    0x01 => WireBoxState.assigned,
+    0x02 => WireBoxState.paid,
+    _ => null, // 0b11
+  };
 
   // ---------------------------------------------------------------------------
   // Transport & CRC helpers

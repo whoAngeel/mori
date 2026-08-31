@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/ink_colors.dart';
+import '../../../../core/time/clock.dart';
 import '../../../../core/widgets/rule_of_365.dart';
 import '../../../challenge/domain/entities/box_status.dart';
 import '../../../challenge/presentation/widgets/ink_box.dart';
@@ -15,10 +16,10 @@ class PartnerBoardScreen extends ConsumerWidget {
   const PartnerBoardScreen({super.key});
 
   static BoxStatus _toBoxStatus(WireBoxState s) => switch (s) {
-        WireBoxState.paid => BoxStatus.paid,
-        WireBoxState.assigned => BoxStatus.assigned,
-        WireBoxState.free => BoxStatus.free,
-      };
+    WireBoxState.paid => BoxStatus.paid,
+    WireBoxState.assigned => BoxStatus.assigned,
+    WireBoxState.free => BoxStatus.free,
+  };
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,6 +45,7 @@ class PartnerBoardScreen extends ConsumerWidget {
                   Expanded(
                     child: PatinaPanel(
                       lastScan: lastScan,
+                      now: ref.watch(clockProvider).now(),
                       builder: (context, inkOpacity) {
                         return CustomScrollView(
                           slivers: [
@@ -52,10 +54,10 @@ class PartnerBoardScreen extends ConsumerWidget {
                               sliver: SliverGrid.builder(
                                 gridDelegate:
                                     const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 12,
-                                  mainAxisSpacing: 4,
-                                  crossAxisSpacing: 4,
-                                ),
+                                      crossAxisCount: 12,
+                                      mainAxisSpacing: 4,
+                                      crossAxisSpacing: 4,
+                                    ),
                                 itemCount: boxes.length,
                                 itemBuilder: (context, i) {
                                   final b = boxes[i];

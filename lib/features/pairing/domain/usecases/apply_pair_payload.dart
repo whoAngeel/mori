@@ -8,8 +8,7 @@ import '../repositories/pairing_repository.dart';
 /// Three branches, decided in the repository: adopt (no local pairing), link
 /// (same `pairingId`, store name + installId only, boxes untouched), or reject
 /// (different `pairingId`, nothing written).
-final class ApplyPairPayload
-    implements UseCase<ApplyPairOutcome, PairInvite> {
+final class ApplyPairPayload implements UseCase<ApplyPairOutcome, PairInvite> {
   /// Creates the use case over [_repository].
   const ApplyPairPayload(this._repository);
 

@@ -21,8 +21,9 @@ Future<String?> syncQrPayload(Ref ref) async {
   final pairing = await ref.watch(pairingStateProvider.future);
   if (pairing is! Paired) return null;
 
-  final result = await BuildSyncPayload(ref.watch(syncRepositoryProvider))
-      .call(const NoParams());
+  final result = await BuildSyncPayload(
+    ref.watch(syncRepositoryProvider),
+  ).call(const NoParams());
   return switch (result) {
     Ok(:final value) => value,
     Err() => null,

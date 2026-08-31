@@ -37,27 +37,26 @@ class OnboardingScreen extends ConsumerWidget {
                   const SizedBox(height: 12),
                   Text(
                     'Un reto, dos personas.',
-                    style: theme.textTheme.headlineMedium!
-                        .copyWith(color: colors.inkBlack),
+                    style: theme.textTheme.headlineMedium!.copyWith(
+                      color: colors.inkBlack,
+                    ),
                   ),
                   const SizedBox(height: 32),
                   InkButton(
                     label: 'Yo empiezo',
                     primary: true,
-                    onPressed: () =>
-                        context.goNamed(AppRoute.pairShow.name),
+                    onPressed: () => context.pushNamed(AppRoute.pairShow.name),
                   ),
                   const SizedBox(height: 12),
                   GhostButton(
                     label: 'Me uno al de mi pareja',
-                    onPressed: () =>
-                        context.goNamed(AppRoute.pairScan.name),
+                    onPressed: () => context.pushNamed(AppRoute.pairScan.name),
                   ),
                   const SizedBox(height: 12),
                   GhostButton(
                     label: 'Recuperar mi reto',
                     onPressed: () =>
-                        context.goNamed(AppRoute.restoreScan.name),
+                        context.pushNamed(AppRoute.restoreScan.name),
                   ),
                 ],
               ),

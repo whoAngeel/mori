@@ -7,12 +7,9 @@ import 'package:mori/features/challenge/domain/entities/challenge_progress.dart'
 import 'package:mori/features/challenge/presentation/widgets/draw_button.dart';
 
 List<Box> _board({int drawn = 0}) => [
-      for (var day = 1; day <= 365; day++)
-        Box(
-          day: day,
-          status: day <= drawn ? BoxStatus.assigned : BoxStatus.free,
-        ),
-    ];
+  for (var day = 1; day <= 365; day++)
+    Box(day: day, status: day <= drawn ? BoxStatus.assigned : BoxStatus.free),
+];
 
 ChallengeProgress _progress({required int drawn, required int elapsed}) =>
     ChallengeProgress.from(
@@ -27,18 +24,21 @@ Future<void> _pump(
   required bool busy,
   required VoidCallback onDraw,
 }) async {
-  await tester.pumpWidget(MaterialApp(
-    theme: AppTheme.light,
-    home: Scaffold(
-      body: DrawButton(progress: progress, busy: busy, onDraw: onDraw),
+  await tester.pumpWidget(
+    MaterialApp(
+      theme: AppTheme.light,
+      home: Scaffold(
+        body: DrawButton(progress: progress, busy: busy, onDraw: onDraw),
+      ),
     ),
-  ));
+  );
 }
 
 void main() {
   group('DrawButton (task 5.7)', () {
-    testWidgets('enabled and fires when there are pending draws',
-        (tester) async {
+    testWidgets('enabled and fires when there are pending draws', (
+      tester,
+    ) async {
       var taps = 0;
       await _pump(
         tester,

@@ -22,9 +22,9 @@ class ChallengeLocalDataSource {
 
   /// Streams the 365 boxes ordered by day.
   Stream<List<OwnBoxRow>> watchBoxes() {
-    return (_db.select(_db.ownBoxes)
-          ..orderBy([(t) => OrderingTerm(expression: t.day)]))
-        .watch();
+    return (_db.select(
+      _db.ownBoxes,
+    )..orderBy([(t) => OrderingTerm(expression: t.day)])).watch();
   }
 
   /// Bumps `stateVersion` by one. Must run inside an open transaction.
@@ -43,15 +43,15 @@ class ChallengeLocalDataSource {
   Future<int?> drawBox() async {
     try {
       return await _db.transaction<int?>(() async {
-        final free = await (_db.select(_db.ownBoxes)
-              ..where((t) => t.status.equals(0)))
-            .get();
+        final free = await (_db.select(
+          _db.ownBoxes,
+        )..where((t) => t.status.equals(0))).get();
         if (free.isEmpty) return null;
 
         final chosen = free[_random.nextInt(free.length)];
-        await (_db.update(_db.ownBoxes)
-              ..where((t) => t.day.equals(chosen.day)))
-            .write(
+        await (_db.update(
+          _db.ownBoxes,
+        )..where((t) => t.day.equals(chosen.day))).write(
           OwnBoxesCompanion(
             status: const Value(1),
             drawnAtMillis: Value(_nowMillis()),
@@ -87,10 +87,7 @@ class ChallengeLocalDataSource {
     try {
       await _db.transaction(() async {
         await (_db.update(_db.ownBoxes)..where((t) => t.day.equals(day))).write(
-          const OwnBoxesCompanion(
-            status: Value(1),
-            paidAtMillis: Value(null),
-          ),
+          const OwnBoxesCompanion(status: Value(1), paidAtMillis: Value(null)),
         );
         await _bumpVersion();
       });

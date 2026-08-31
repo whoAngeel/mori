@@ -35,10 +35,10 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
   BoardFilter _filter = BoardFilter.all;
 
   bool _matches(Box b) => switch (_filter) {
-        BoardFilter.all => true,
-        BoardFilter.pending => b.status == BoxStatus.assigned,
-        BoardFilter.paid => b.status == BoxStatus.paid,
-      };
+    BoardFilter.all => true,
+    BoardFilter.pending => b.status == BoxStatus.assigned,
+    BoardFilter.paid => b.status == BoxStatus.paid,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -75,10 +75,10 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                         sliver: SliverGrid.builder(
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: columns,
-                            mainAxisSpacing: 4,
-                            crossAxisSpacing: 4,
-                          ),
+                                crossAxisCount: columns,
+                                mainAxisSpacing: 4,
+                                crossAxisSpacing: 4,
+                              ),
                           itemCount: visible.length,
                           itemBuilder: (context, i) {
                             final box = visible[i];
@@ -132,7 +132,10 @@ class _Filters extends StatelessWidget {
               ),
             ),
           ),
-          child: Eyebrow(label, color: active ? colors.inkBlack : colors.inkMuted),
+          child: Eyebrow(
+            label,
+            color: active ? colors.inkBlack : colors.inkMuted,
+          ),
         ),
       );
     }

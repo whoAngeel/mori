@@ -30,9 +30,7 @@ class PendingPaymentsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<InkColors>()!;
-    final pending = boxes
-        .where((b) => b.status == BoxStatus.assigned)
-        .toList()
+    final pending = boxes.where((b) => b.status == BoxStatus.assigned).toList()
       ..sort(_byAgeThenDay);
 
     return Column(
@@ -43,11 +41,13 @@ class PendingPaymentsList extends StatelessWidget {
         if (pending.isEmpty)
           const EmptyPlate('Cuando sortees, lo pendiente aparece aquí.')
         else
-          ...pending.map((b) => _PendingRow(
-                box: b,
-                ink: colors.inkSelf,
-                onPay: () => onPay(b.day),
-              )),
+          ...pending.map(
+            (b) => _PendingRow(
+              box: b,
+              ink: colors.inkSelf,
+              onPay: () => onPay(b.day),
+            ),
+          ),
       ],
     );
   }
@@ -90,13 +90,17 @@ class _PendingRow extends StatelessWidget {
               children: [
                 Text(
                   Amount.format(box.amountMxn),
-                  style: theme.textTheme.displaySmall!
-                      .copyWith(color: colors.inkBlack, fontSize: 18),
+                  style: theme.textTheme.displaySmall!.copyWith(
+                    color: colors.inkBlack,
+                    fontSize: 18,
+                  ),
                 ),
                 Text(
                   _ageLabel(box.drawnAt),
-                  style: theme.textTheme.bodyMedium!
-                      .copyWith(color: colors.inkMuted, fontSize: 13),
+                  style: theme.textTheme.bodyMedium!.copyWith(
+                    color: colors.inkMuted,
+                    fontSize: 13,
+                  ),
                 ),
               ],
             ),

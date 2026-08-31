@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/ink_colors.dart';
+import '../../../../core/time/clock.dart';
 import '../../../../core/widgets/eyebrow.dart';
 import '../providers/sync_notifier.dart';
 import '../widgets/freshness_label.dart';
-import 'sync_scan_screen.dart';
-import 'sync_show_screen.dart';
 
 /// The sync hub: the two numbered steps of the ritual and the last-scan date.
 ///
@@ -21,13 +22,16 @@ class SyncHubScreen extends ConsumerWidget {
     final colors = Theme.of(context).extension<InkColors>()!;
     final theme = Theme.of(context);
     final snapshot = ref.watch(partnerSnapshotProvider);
+    final now = ref.watch(clockProvider).now();
 
     final lastScan = switch (snapshot) {
-      AsyncData(:final value) => value == null
-          ? 'Todavía no escaneas su código'
-          : FreshnessLabel.labelFor(
-              DateTime.fromMillisecondsSinceEpoch(value.receivedAtMillis),
-            ),
+      AsyncData(:final value) =>
+        value == null
+            ? 'Todavía no escaneas su código'
+            : FreshnessLabel.labelFor(
+                DateTime.fromMillisecondsSinceEpoch(value.receivedAtMillis),
+                now: now,
+              ),
       _ => '',
     };
 
@@ -45,30 +49,23 @@ class SyncHubScreen extends ConsumerWidget {
                 Text(
                   'Se hacen dos escaneos: uno para que ella te vea, otro para '
                   'que tú la veas.',
-                  style: theme.textTheme.bodyMedium!
-                      .copyWith(color: colors.inkBlack),
+                  style: theme.textTheme.bodyMedium!.copyWith(
+                    color: colors.inkBlack,
+                  ),
                 ),
                 const SizedBox(height: 24),
                 _Step(
                   number: 1,
                   title: 'Mostrar mi código',
                   subtitle: 'Para que ella te escanee',
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => const SyncShowScreen(),
-                    ),
-                  ),
+                  onTap: () => context.pushNamed(AppRoute.syncShow.name),
                 ),
                 const SizedBox(height: 12),
                 _Step(
                   number: 2,
                   title: 'Escanear el suyo',
                   subtitle: lastScan,
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => const SyncScanScreen(),
-                    ),
-                  ),
+                  onTap: () => context.pushNamed(AppRoute.syncScan.name),
                 ),
               ],
             ),
@@ -108,8 +105,9 @@ class _Step extends StatelessWidget {
           children: [
             Text(
               '$number',
-              style: theme.textTheme.displaySmall!
-                  .copyWith(color: colors.inkSelf),
+              style: theme.textTheme.displaySmall!.copyWith(
+                color: colors.inkSelf,
+              ),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -118,14 +116,17 @@ class _Step extends StatelessWidget {
                 children: [
                   Text(
                     title.toUpperCase(),
-                    style: theme.textTheme.labelLarge!
-                        .copyWith(color: colors.inkBlack),
+                    style: theme.textTheme.labelLarge!.copyWith(
+                      color: colors.inkBlack,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: theme.textTheme.bodyMedium!
-                        .copyWith(color: colors.inkMuted, fontSize: 13),
+                    style: theme.textTheme.bodyMedium!.copyWith(
+                      color: colors.inkMuted,
+                      fontSize: 13,
+                    ),
                   ),
                 ],
               ),

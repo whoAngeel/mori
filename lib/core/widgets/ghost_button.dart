@@ -6,11 +6,7 @@ import '../theme/ink_colors.dart';
 /// ripple. See `docs/design-system.md` §7.
 class GhostButton extends StatelessWidget {
   /// Creates a ghost button.
-  const GhostButton({
-    super.key,
-    required this.label,
-    required this.onPressed,
-  });
+  const GhostButton({super.key, required this.label, required this.onPressed});
 
   /// The button label.
   final String label;

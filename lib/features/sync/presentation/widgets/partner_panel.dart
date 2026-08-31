@@ -51,14 +51,15 @@ class PartnerPanel extends ConsumerWidget {
           const SizedBox(height: 12),
           GhostButton(
             label: 'Sincronizar',
-            onPressed: () => context.goNamed(AppRoute.sync.name),
+            onPressed: () => context.pushNamed(AppRoute.sync.name),
           ),
         ],
       );
     }
 
-    final lastScan =
-        DateTime.fromMillisecondsSinceEpoch(snapshot.receivedAtMillis);
+    final lastScan = DateTime.fromMillisecondsSinceEpoch(
+      snapshot.receivedAtMillis,
+    );
     final progress = PartnerProgress.from(
       boxes: boxes,
       snapshot: snapshot,
@@ -67,11 +68,14 @@ class PartnerPanel extends ConsumerWidget {
 
     return PatinaPanel(
       lastScan: lastScan,
+      now: clock.now(),
       builder: (context, inkOpacity) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Eyebrow('${partnerName ?? 'Tu pareja'} · Día ${progress.challengeDay}'),
+            Eyebrow(
+              '${partnerName ?? 'Tu pareja'} · Día ${progress.challengeDay}',
+            ),
             const SizedBox(height: 8),
             Amount(
               progress.savedMxn,
@@ -82,8 +86,9 @@ class PartnerPanel extends ConsumerWidget {
             const SizedBox(height: 4),
             Text(
               '${progress.drawn} casillas',
-              style:
-                  theme.textTheme.bodyMedium!.copyWith(color: colors.inkMuted),
+              style: theme.textTheme.bodyMedium!.copyWith(
+                color: colors.inkMuted,
+              ),
             ),
             const SizedBox(height: 8),
             _PartnerBar(
@@ -93,7 +98,7 @@ class PartnerPanel extends ConsumerWidget {
             const SizedBox(height: 8),
             GhostButton(
               label: 'Ver su tablero',
-              onPressed: () => context.goNamed(AppRoute.partner.name),
+              onPressed: () => context.pushNamed(AppRoute.partner.name),
             ),
           ],
         );

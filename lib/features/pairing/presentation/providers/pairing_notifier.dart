@@ -28,10 +28,10 @@ PairingLocalDataSource pairingLocalDataSource(Ref ref) =>
 /// The pairing repository, wired with the clock and RNG.
 @riverpod
 PairingRepository pairingRepository(Ref ref) => PairingRepositoryImpl(
-      ref.watch(pairingLocalDataSourceProvider),
-      ref.watch(clockProvider),
-      ref.watch(randomProvider),
-    );
+  ref.watch(pairingLocalDataSourceProvider),
+  ref.watch(clockProvider),
+  ref.watch(randomProvider),
+);
 
 /// Streams the pairing state for the router redirect and UI.
 @riverpod
@@ -56,13 +56,9 @@ class PairingController extends _$PairingController {
   Future<Result<PairInvite>> joinChallenge({
     required PairInvite inviterInvite,
     required String localName,
-  }) =>
-      JoinChallenge(_repo).call(
-        JoinChallengeParams(
-          inviterInvite: inviterInvite,
-          localName: localName,
-        ),
-      );
+  }) => JoinChallenge(_repo).call(
+    JoinChallengeParams(inviterInvite: inviterInvite, localName: localName),
+  );
 
   /// Applies a scanned partner PAIR payload.
   Future<Result<ApplyPairOutcome>> applyPartner(PairInvite invite) =>

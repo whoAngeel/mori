@@ -16,14 +16,14 @@ import 'package:mori/features/sync/domain/entities/sync_payload.dart';
 import '../../../helpers/fake_clock.dart';
 
 T _ok<T>(Result<T> r) => switch (r) {
-      Ok<T>(:final value) => value,
-      Err<T>(:final failure) => fail('expected Ok, got Err($failure)'),
-    };
+  Ok<T>(:final value) => value,
+  Err<T>(:final failure) => fail('expected Ok, got Err($failure)'),
+};
 
 Failure _err<T>(Result<T> r) => switch (r) {
-      Err<T>(:final failure) => failure,
-      Ok<T>() => fail('expected Err, got Ok'),
-    };
+  Err<T>(:final failure) => failure,
+  Ok<T>() => fail('expected Err, got Ok'),
+};
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -37,23 +37,24 @@ void main() {
   const partnerInstallId = 0xAAAA;
 
   List<WireBoxState> statuses({int assigned = 0}) => [
-        for (var day = 1; day <= 365; day++)
-          day <= assigned ? WireBoxState.assigned : WireBoxState.free,
-      ];
+    for (var day = 1; day <= 365; day++)
+      day <= assigned ? WireBoxState.assigned : WireBoxState.free,
+  ];
 
   String partnerSync({
     required int stateVersion,
     int installId = partnerInstallId,
     int assigned = 0,
-  }) =>
-      SyncCodec.encodeSync(SyncSnapshot(
-        pairingId: localPairingId,
-        slot: 1, // partner is slot B
-        installId: installId,
-        stateVersion: stateVersion,
-        startEpochDay: 20000,
-        statuses: statuses(assigned: assigned),
-      ));
+  }) => SyncCodec.encodeSync(
+    SyncSnapshot(
+      pairingId: localPairingId,
+      slot: 1, // partner is slot B
+      installId: installId,
+      stateVersion: stateVersion,
+      startEpochDay: 20000,
+      statuses: statuses(assigned: assigned),
+    ),
+  );
 
   Future<int> partnerRowCount() async =>
       (await local.readPartnerBoxes()).length;
@@ -81,9 +82,9 @@ void main() {
 
   group('acceptance rule (§8) — tasks 6.2, 6.4', () {
     test('first sync ever is accepted', () async {
-      final outcome = _ok(await repo.applySyncPayload(
-        partnerSync(stateVersion: 3, assigned: 5),
-      ));
+      final outcome = _ok(
+        await repo.applySyncPayload(partnerSync(stateVersion: 3, assigned: 5)),
+      );
       expect(outcome, isA<SyncApplied>());
       expect((outcome as SyncApplied).stateVersion, 3);
       expect(await partnerRowCount(), 365);
@@ -101,16 +102,18 @@ void main() {
 
       final boxesAfterSecond = await local.readPartnerBoxes();
       final snapAfterSecond = await local.readPartnerSnapshot();
-      expect(boxesAfterSecond.map((b) => b.status).toList(),
-          boxesAfterFirst.map((b) => b.status).toList());
+      expect(
+        boxesAfterSecond.map((b) => b.status).toList(),
+        boxesAfterFirst.map((b) => b.status).toList(),
+      );
       expect(snapAfterSecond!.stateVersion, snapAfterFirst!.stateVersion);
       expect(snapAfterSecond.receivedAtMillis, snapAfterFirst.receivedAtMillis);
     });
 
     test('monotonicity: a lower stateVersion writes nothing', () async {
-      _ok(await repo.applySyncPayload(
-        partnerSync(stateVersion: 5, assigned: 10),
-      ));
+      _ok(
+        await repo.applySyncPayload(partnerSync(stateVersion: 5, assigned: 10)),
+      );
       final before = await local.readPartnerBoxes();
 
       final stale = await repo.applySyncPayload(
@@ -119,27 +122,34 @@ void main() {
       expect(_err(stale), isA<StaleSnapshot>());
 
       final after = await local.readPartnerBoxes();
-      expect(after.map((b) => b.status).toList(),
-          before.map((b) => b.status).toList());
+      expect(
+        after.map((b) => b.status).toList(),
+        before.map((b) => b.status).toList(),
+      );
     });
 
     test('higher stateVersion is accepted', () async {
       _ok(await repo.applySyncPayload(partnerSync(stateVersion: 2)));
-      final outcome =
-          _ok(await repo.applySyncPayload(partnerSync(stateVersion: 7)));
+      final outcome = _ok(
+        await repo.applySyncPayload(partnerSync(stateVersion: 7)),
+      );
       expect(outcome, isA<SyncApplied>());
       expect((outcome as SyncApplied).stateVersion, 7);
     });
 
     test('different installId accepts even when the version drops, and '
         'resets the baseline', () async {
-      _ok(await repo.applySyncPayload(
-        partnerSync(stateVersion: 100, assigned: 50),
-      ));
+      _ok(
+        await repo.applySyncPayload(
+          partnerSync(stateVersion: 100, assigned: 50),
+        ),
+      );
       // Reinstall: installId changes, version resets low, board smaller.
-      final outcome = _ok(await repo.applySyncPayload(
-        partnerSync(stateVersion: 1, installId: 0xBBBB, assigned: 2),
-      ));
+      final outcome = _ok(
+        await repo.applySyncPayload(
+          partnerSync(stateVersion: 1, installId: 0xBBBB, assigned: 2),
+        ),
+      );
       expect(outcome, isA<SyncPartnerReset>());
       expect((outcome as SyncPartnerReset).lostProgress, isTrue);
 
@@ -149,51 +159,60 @@ void main() {
     });
 
     test('reinstall without loss does not flag lostProgress', () async {
-      _ok(await repo.applySyncPayload(
-        partnerSync(stateVersion: 100, assigned: 5),
-      ));
-      final outcome = _ok(await repo.applySyncPayload(
-        partnerSync(stateVersion: 1, installId: 0xBBBB, assigned: 5),
-      ));
+      _ok(
+        await repo.applySyncPayload(
+          partnerSync(stateVersion: 100, assigned: 5),
+        ),
+      );
+      final outcome = _ok(
+        await repo.applySyncPayload(
+          partnerSync(stateVersion: 1, installId: 0xBBBB, assigned: 5),
+        ),
+      );
       expect((outcome as SyncPartnerReset).lostProgress, isFalse);
     });
   });
 
   group('checks 8 & 9', () {
     test('foreign pairing is rejected', () async {
-      final foreign = SyncCodec.encodeSync(SyncSnapshot(
-        pairingId: 0x9999, // not ours
-        slot: 1,
-        installId: partnerInstallId,
-        stateVersion: 1,
-        startEpochDay: 20000,
-        statuses: statuses(),
-      ));
+      final foreign = SyncCodec.encodeSync(
+        SyncSnapshot(
+          pairingId: 0x9999, // not ours
+          slot: 1,
+          installId: partnerInstallId,
+          stateVersion: 1,
+          startEpochDay: 20000,
+          statuses: statuses(),
+        ),
+      );
       expect(_err(await repo.applySyncPayload(foreign)), isA<ForeignPairing>());
     });
 
     test('own payload (same slot) is rejected', () async {
-      final own = SyncCodec.encodeSync(SyncSnapshot(
-        pairingId: localPairingId,
-        slot: 0, // same as local
-        installId: 0x1111,
-        stateVersion: 1,
-        startEpochDay: 20000,
-        statuses: statuses(),
-      ));
-      expect(
-          _err(await repo.applySyncPayload(own)), isA<OwnPayloadScanned>());
+      final own = SyncCodec.encodeSync(
+        SyncSnapshot(
+          pairingId: localPairingId,
+          slot: 0, // same as local
+          installId: 0x1111,
+          stateVersion: 1,
+          startEpochDay: 20000,
+          statuses: statuses(),
+        ),
+      );
+      expect(_err(await repo.applySyncPayload(own)), isA<OwnPayloadScanned>());
     });
 
     test('a rejected payload leaves no partial write', () async {
-      final foreign = SyncCodec.encodeSync(SyncSnapshot(
-        pairingId: 0x9999,
-        slot: 1,
-        installId: partnerInstallId,
-        stateVersion: 1,
-        startEpochDay: 20000,
-        statuses: statuses(assigned: 10),
-      ));
+      final foreign = SyncCodec.encodeSync(
+        SyncSnapshot(
+          pairingId: 0x9999,
+          slot: 1,
+          installId: partnerInstallId,
+          stateVersion: 1,
+          startEpochDay: 20000,
+          statuses: statuses(assigned: 10),
+        ),
+      );
       await repo.applySyncPayload(foreign);
       expect(await partnerRowCount(), 0);
       expect(await local.readPartnerSnapshot(), isNull);

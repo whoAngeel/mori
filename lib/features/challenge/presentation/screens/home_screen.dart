@@ -34,8 +34,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       Err(:final failure) => failure.message,
     };
     if (message != null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(message)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
     }
   }
 
@@ -50,12 +51,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 480),
             child: state.when(
-              loading: () =>
-                  const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Center(child: Text('$e')),
               data: (data) => ListView(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 20, vertical: 16),
+                  horizontal: 20,
+                  vertical: 16,
+                ),
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -75,12 +77,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                   const SizedBox(height: 24),
                   GestureDetector(
-                    onTap: () => context.goNamed(AppRoute.board.name),
+                    onTap: () => context.pushNamed(AppRoute.board.name),
                     child: PendingPaymentsList(
                       boxes: data.boxes,
-                      onPay: (day) => ref
-                          .read(challengeProvider.notifier)
-                          .markPaid(day),
+                      onPay: (day) =>
+                          ref.read(challengeProvider.notifier).markPaid(day),
                     ),
                   ),
                   const SizedBox(height: 24),

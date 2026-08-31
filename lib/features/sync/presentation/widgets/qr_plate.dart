@@ -27,6 +27,9 @@ class QrPlate extends StatelessWidget {
           data: data,
           version: QrVersions.auto,
           size: size,
+          // The 16 dp quiet zone is the Container's padding; QrImageView adds
+          // its own 10 dp by default, so it is zeroed here to keep exactly 16.
+          padding: EdgeInsets.zero,
           errorCorrectionLevel: QrErrorCorrectLevel.M,
           backgroundColor: colors.plate,
           // ignore: deprecated_member_use
