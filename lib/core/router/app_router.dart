@@ -10,6 +10,7 @@ import '../../features/pairing/presentation/screens/pair_confirm_screen.dart';
 import '../../features/pairing/presentation/screens/pair_respond_screen.dart';
 import '../../features/pairing/presentation/screens/pair_scan_screen.dart';
 import '../../features/pairing/presentation/screens/pair_show_screen.dart';
+import '../../features/pairing/presentation/screens/settings_screen.dart';
 import '../../features/sync/presentation/screens/partner_board_screen.dart';
 import '../../features/sync/presentation/screens/restore_scan_screen.dart';
 import '../../features/sync/presentation/screens/restore_show_screen.dart';
@@ -60,6 +61,9 @@ enum AppRoute {
 
   /// `/partner`
   partner,
+
+  /// `/settings`
+  settings,
 }
 
 /// The app's [GoRouter]. Redirects by pairing state (design §6): an unpaired
@@ -154,6 +158,11 @@ GoRouter goRouter(Ref ref) {
             path: 'partner',
             name: AppRoute.partner.name,
             builder: (context, state) => const PartnerBoardScreen(),
+          ),
+          GoRoute(
+            path: 'settings',
+            name: AppRoute.settings.name,
+            builder: (context, state) => const SettingsScreen(),
           ),
           GoRoute(
             path: 'restore/show',

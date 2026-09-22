@@ -27,6 +27,13 @@ class PartnerBoardScreen extends ConsumerWidget {
     final snapshot = ref.watch(partnerSnapshotProvider).value;
     final boxes = ref.watch(partnerBoxesProvider).value ?? const [];
 
+    // The snapshot is the source of truth for "have we ever synced" (see
+    // partner_snapshot_table.dart): its row exists iff a sync was accepted.
+    // The boxes stream can still be null on the first frame even when data is
+    // stored, so keying the empty state on `boxes.isEmpty` would flash the
+    // "nunca sincronizado" copy over a board that does have data.
+    final neverSynced = snapshot == null;
+
     final lastScan = snapshot == null
         ? null
         : DateTime.fromMillisecondsSinceEpoch(snapshot.receivedAtMillis);
@@ -38,8 +45,10 @@ class PartnerBoardScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Su tablero')),
       body: SafeArea(
-        child: boxes.isEmpty
+        child: neverSynced
             ? const Center(child: Text('Todavía no escaneas su código'))
+            : boxes.isEmpty
+            ? const Center(child: CircularProgressIndicator())
             : Column(
                 children: [
                   Expanded(

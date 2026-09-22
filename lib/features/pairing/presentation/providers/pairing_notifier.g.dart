@@ -193,7 +193,7 @@ final class PairingControllerProvider
   }
 }
 
-String _$pairingControllerHash() => r'c8381c3e976e7be1a3d24902221637a0bf991901';
+String _$pairingControllerHash() => r'd032911444ae41214ff419ac73dcbf8ac3f001f3';
 
 /// Coordinates the pairing ceremony commands.
 

@@ -100,6 +100,14 @@ class PartnerPanel extends ConsumerWidget {
               label: 'Ver su tablero',
               onPressed: () => context.pushNamed(AppRoute.partner.name),
             ),
+            const SizedBox(height: 8),
+            // Sync is recurring: every time you meet in person you scan again.
+            // Keep the entry point here after the first sync too, or there is
+            // no way back to the sync ritual.
+            GhostButton(
+              label: 'Sincronizar',
+              onPressed: () => context.pushNamed(AppRoute.sync.name),
+            ),
           ],
         );
       },

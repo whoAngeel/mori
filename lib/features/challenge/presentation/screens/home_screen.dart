@@ -73,7 +73,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     children: [
                       IconButton(
                         icon: Icon(Icons.settings, color: colors.inkBlack),
-                        onPressed: () => context.goNamed(AppRoute.home.name),
+                        onPressed: () =>
+                            context.pushNamed(AppRoute.settings.name),
                       ),
                     ],
                   ),
