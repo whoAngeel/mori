@@ -8,7 +8,7 @@ import '../../../challenge/domain/entities/box_status.dart';
 import '../../../challenge/presentation/widgets/ink_box.dart';
 import '../../domain/entities/box_state.dart';
 import '../providers/sync_notifier.dart';
-import '../widgets/patina_panel.dart';
+import '../widgets/freshness_label.dart';
 
 /// The partner's replica board, rendered in partner ink under the patina.
 class PartnerBoardScreen extends ConsumerWidget {
@@ -34,6 +34,7 @@ class PartnerBoardScreen extends ConsumerWidget {
     // "nunca sincronizado" copy over a board that does have data.
     final neverSynced = snapshot == null;
 
+    final now = ref.watch(clockProvider).now();
     final lastScan = snapshot == null
         ? null
         : DateTime.fromMillisecondsSinceEpoch(snapshot.receivedAtMillis);
@@ -41,6 +42,13 @@ class PartnerBoardScreen extends ConsumerWidget {
         .where((b) => b.status != WireBoxState.free)
         .map((b) => b.day)
         .toSet();
+
+    // The patina dims the partner's ink as the scan ages, never the text
+    // (design §5). Applied straight to the InkBox opacity here — the previous
+    // PatinaPanel wrapper is a Column meant for the fixed-height home mini-view;
+    // nesting a full-screen scrollable grid inside it collapsed the grid to
+    // zero height, which is why the boxes did not show.
+    final inkOpacity = FreshnessLabel.opacityFor(lastScan, now: now);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Su tablero')),
@@ -52,37 +60,32 @@ class PartnerBoardScreen extends ConsumerWidget {
             : Column(
                 children: [
                   Expanded(
-                    child: PatinaPanel(
-                      lastScan: lastScan,
-                      now: ref.watch(clockProvider).now(),
-                      builder: (context, inkOpacity) {
-                        return CustomScrollView(
-                          slivers: [
-                            SliverPadding(
-                              padding: const EdgeInsets.all(20),
-                              sliver: SliverGrid.builder(
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 12,
-                                      mainAxisSpacing: 4,
-                                      crossAxisSpacing: 4,
-                                    ),
-                                itemCount: boxes.length,
-                                itemBuilder: (context, i) {
-                                  final b = boxes[i];
-                                  return InkBox(
-                                    day: b.day,
-                                    status: _toBoxStatus(b.status),
-                                    ink: colors.inkPartner,
-                                    size: 24,
-                                    opacity: inkOpacity,
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
+                    child: GridView.builder(
+                      padding: const EdgeInsets.all(20),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 12,
+                            mainAxisSpacing: 4,
+                            crossAxisSpacing: 4,
+                          ),
+                      itemCount: boxes.length,
+                      itemBuilder: (context, i) {
+                        final b = boxes[i];
+                        return InkBox(
+                          day: b.day,
+                          status: _toBoxStatus(b.status),
+                          ink: colors.inkPartner,
+                          size: 24,
+                          opacity: inkOpacity,
                         );
                       },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: FreshnessLabel(lastScan: lastScan, now: now),
                     ),
                   ),
                   Padding(
